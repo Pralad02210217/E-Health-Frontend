@@ -9,17 +9,47 @@ import {
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { LogOutIcon, SettingsIcon, UserIcon } from "./icons";
+import { useMutation } from "@tanstack/react-query";
+import { logoutMutationFn } from "@/lib/api";
+import { useRouter } from "next/navigation";
+import { toast } from "@/hooks/use-toast";
+import useAuth from "@/hooks/use-auth";
 
 export function UserInfo() {
   const [isOpen, setIsOpen] = useState(false);
+  
 
+  const { user } = useAuth();
+  console.log(JSON.stringify(user))
+
+  
   const USER = {
-    name: "John Smith",
-    email: "johnson@nextadmin.com",
+    name: user?.name,
+    email: user?.email,
     img: "/images/user/user-03.png",
   };
+
+  const router = useRouter()
+  const { mutate, isPending } = useMutation({
+    mutationFn: logoutMutationFn,
+    onSuccess: () => {
+      router.replace("/sign-in");
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+    const handleLogout = useCallback(() => {
+    mutate();
+    setIsOpen(false)
+  }, []);
 
   return (
     <Dropdown isOpen={isOpen} setIsOpen={setIsOpen}>
@@ -106,7 +136,8 @@ export function UserInfo() {
         <div className="p-2 text-base text-[#4B5563] dark:text-dark-6">
           <button
             className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white"
-            onClick={() => setIsOpen(false)}
+            disabled={isPending}
+            onClick={handleLogout}
           >
             <LogOutIcon />
 
