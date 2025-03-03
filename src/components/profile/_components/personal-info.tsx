@@ -11,6 +11,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateUserProfileFn } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
 import { Loader } from "lucide-react";
+import ChangePasswordModal from "@/components/Change-password/ChangePassword";
 
 
 const departmentMap = {
@@ -37,7 +38,7 @@ const schema = z.object({
   student_id: z.string().optional(),
 });
 
-type DepartmentId = keyof typeof departmentMap;
+export type DepartmentId = keyof typeof departmentMap;
 
 interface User {
   userType?: string;
@@ -49,6 +50,7 @@ interface User {
   contact_number: string;
   std_year?: string;
   student_id?: string;
+  profile_pic?:string
 }
 
   
@@ -58,6 +60,7 @@ export default function PersonalInfoForm({ user, refetch }: { user: User, refetc
 
   const isStudent = user?.userType === "STUDENT";
   const [isChanged, setIsChanged] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const {
     register,
@@ -208,12 +211,22 @@ export default function PersonalInfoForm({ user, refetch }: { user: User, refetc
               </Select>
             </div>
           )}
+          {/* Change Password Button */}
+          <Button
+            type="button" 
+            className="bg-red-500 hover:bg-red-600 text-white mb-5"
+            onClick={() => setIsModalOpen(true)}
+          >
+            Change Password
+          </Button>
+       
 
           <Button type="submit" className="w-full text-[15px] h-[40px] text-white font-semibold bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg hover:opacity-90" disabled={!isChanged || isPending}>
             {isPending && <Loader className="animate-spin" />}
             Save Changes
           </Button>
         </form>
+         <ChangePasswordModal open={isModalOpen} onClose={() => setIsModalOpen(false)} />
       </CardContent>
     </Card>
   );

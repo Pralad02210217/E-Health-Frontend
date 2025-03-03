@@ -1,14 +1,63 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { UploadIcon } from "@/assets/icons";
 import { ShowcaseSection } from "@/components/Layouts/showcase-section";
 import Image from "next/image";
 import { uploadImage } from '@/lib/cloudinary';
 import { toast } from "@/hooks/use-toast";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { updateUerProfilePicFn } from '@/lib/api';
+import { DepartmentId } from './personal-info';
+interface User {
+  userType?: string;
+  name: string;
+  email: string;
+  gender: "MALE" | "FEMALE" | "OTHER";
+  department_id: DepartmentId;
+  blood_type: "A+" | "A-" | "B+" | "B-" | "O+" | "O-" | "AB+" | "AB-";
+  contact_number: string;
+  std_year?: string;
+  student_id?: string;
+  profile_url?:string
+}
 
-export function UploadPhotoForm() {
+
+export function UploadPhotoForm({ user, refetch }: { user: User, refetch:() => void }) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const queryClient = useQueryClient()
+  useEffect(() => {
+    if (user) {
+      setPreviewUrl(user.profile_url || null);
+    }
+    console.log(previewUrl)
+    setIsLoading(false);
+  }, [user]);
+
+
+  const {mutate, isPending} = useMutation({
+    mutationFn: (data: {
+    profile_url: string,
+    }) => updateUerProfilePicFn(data),
+    onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ["authUser"] });
+    refetch()
+      toast({
+        title: "Success",
+        description: "Profile Picture updated successfully",
+        variant: "default",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description:  error.data.message || "Failed to update profile",
+        variant: "destructive",
+      });
+    },
+  });
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -25,13 +74,9 @@ export function UploadPhotoForm() {
     setIsUploading(true);
     try {
       const result = await uploadImage(selectedFile);
-      toast({
-        title: "Success",
-        description: "Photo uploaded successfully",
-        variant: "default",
-      });
-      // Handle the result (e.g., save the URL to the user's profile)
-      console.log(result.secure_url);
+      const data = result.secure_url
+      mutate({ profile_url: data });
+
     } catch (error) {
       toast({
         title: "Error",
@@ -43,7 +88,6 @@ export function UploadPhotoForm() {
       setIsUploading(false);
     }
   };
-
   return (
     <ShowcaseSection title="Your Photo" className="!p-7">
       <form onSubmit={handleUpload}>

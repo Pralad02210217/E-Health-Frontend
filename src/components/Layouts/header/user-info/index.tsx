@@ -22,13 +22,12 @@ export function UserInfo() {
   
 
   const { user } = useAuth();
-  console.log(JSON.stringify(user))
 
   
   const USER = {
     name: user?.name,
     email: user?.email,
-    img: "/images/user/user-03.png",
+    img: user?.profile_url || "/images/user/user-03.png",
   };
 
   const router = useRouter()
@@ -59,7 +58,7 @@ export function UserInfo() {
         <figure className="flex items-center gap-3">
           <Image
             src={USER.img}
-            className="size-12"
+            className="size-12 rounded-full"
             alt={`Avatar of ${USER.name}`}
             role="presentation"
             width={200}
@@ -71,8 +70,8 @@ export function UserInfo() {
             <ChevronUpIcon
               aria-hidden
               className={cn(
-                "rotate-180 transition-transform",
-                isOpen && "rotate-0",
+          "rotate-180 transition-transform",
+          isOpen && "rotate-0",
               )}
               strokeWidth={1.5}
             />
@@ -119,7 +118,7 @@ export function UserInfo() {
           </Link>
 
           <Link
-            href={"/pages/settings"}
+            href={"/settings"}
             onClick={() => setIsOpen(false)}
             className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white"
           >

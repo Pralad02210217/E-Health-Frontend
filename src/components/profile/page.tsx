@@ -1,5 +1,4 @@
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import type { Metadata } from "next";
 
 import { UploadPhotoForm } from "./_components/upload-photo";
 import PersonalInfoForm from "./_components/personal-info";
@@ -20,7 +19,7 @@ export default function ProfilePage( { user, refetch }: PersonalInfoFormProps) {
           <PersonalInfoForm user={user} refetch={refetch} />
         </div>
         <div className="col-span-5 xl:col-span-2">
-          <UploadPhotoForm />
+          <UploadPhotoForm user={user} refetch={refetch} />
         </div>
       </div>
     </div>
