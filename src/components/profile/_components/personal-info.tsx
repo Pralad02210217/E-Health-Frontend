@@ -12,6 +12,7 @@ import { updateUserProfileFn } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
 import { Loader } from "lucide-react";
 import ChangePasswordModal from "@/components/Change-password/ChangePassword";
+import ChangeSecretModal from "@/components/Change-secretKey/ChangeSecretKey";
 
 
 const departmentMap = {
@@ -61,6 +62,8 @@ export default function PersonalInfoForm({ user, refetch }: { user: User, refetc
   const isStudent = user?.userType === "STUDENT";
   const [isChanged, setIsChanged] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [haModelOpen, setHaModelOpen] = useState(false);
+  const [isHa, setIsHA] = useState(false)
 
   const {
     register,
@@ -91,6 +94,9 @@ export default function PersonalInfoForm({ user, refetch }: { user: User, refetc
       setValue("contact_number", user.contact_number);
       setValue("std_year", user.std_year);
       setValue("student_id", user.student_id);
+    }
+    if(user?.userType === "HA"){
+      setIsHA(true) 
     }
 
   }, [user, setValue]);
@@ -212,13 +218,24 @@ export default function PersonalInfoForm({ user, refetch }: { user: User, refetc
             </div>
           )}
           {/* Change Password Button */}
-          <Button
+          <div className="flex justify-between mb-10 ">
+            <Button
             type="button" 
-            className="bg-red-500 hover:bg-red-600 text-white mb-5"
+            className="text-[15px] h-[40px] text-white font-semibold bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg hover:opacity-90"
             onClick={() => setIsModalOpen(true)}
           >
             Change Password
           </Button>
+          {isHa && (
+            <Button
+              type="button" 
+              className="text-[15px] h-[40px] text-white font-semibold bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg hover:opacity-90"
+              onClick={() => setHaModelOpen(true)}
+            >
+              Change Secret
+            </Button>
+          )}
+          </div>
        
 
           <Button type="submit" className="w-full text-[15px] h-[40px] text-white font-semibold bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg hover:opacity-90" disabled={!isChanged || isPending}>
@@ -227,6 +244,7 @@ export default function PersonalInfoForm({ user, refetch }: { user: User, refetc
           </Button>
         </form>
          <ChangePasswordModal open={isModalOpen} onClose={() => setIsModalOpen(false)} />
+          <ChangeSecretModal open={haModelOpen} onClose={() => setHaModelOpen(false)} />
       </CardContent>
     </Card>
   );

@@ -65,6 +65,22 @@ type forgotPassword = {
     currentPassword: string,
     newPassword: string
 }
+type changeSecret = {
+    currentSecret: string,
+    newSecret: string
+}
+type HALeave = {
+    start_date: string,
+    end_date: string,
+    reason: string
+}
+type createFeed = {
+    title: string,
+    description: string,
+    image_urls?: string[],
+    video_url?: string[]
+}
+// Common Auth Functionality
 
 export const loginMutationFn = async(data:LoginType) => 
     await API.post("/auth/login", data)
@@ -97,6 +113,8 @@ export const revokeMFAMutationFn = async() => await API.put('/mfa/revoke', {})
 export const verifyMFAMutationFn = async(data: verifyMFAType) =>
     await API.post(`/mfa/verify`, data)
 
+// Common Session Functionality
+
 export const getUserSessionQueryFn = async() => await API.get('/session/')
 
 export const sessionsQueryFn = async() => {
@@ -109,8 +127,51 @@ export const sessionDelMutationFn = async (id: string) =>
 export const sessionDelAllMutationFn = async () =>
     await API.delete("/session/delete/all");
 
+// Common User Functionality
 export const getUserEmailFn = async(data: forgotPasswordType) => await API.post('/user/email',data)
 export const updateUserProfileFn = async(data: updateProfile) => await API.put("/user/update", data)
 export const updateUerProfilePicFn = async(data: profileUrl) => await API.put('/user/update-profile', data)
 export const changePasswordFn = async(data: forgotPassword) => await API.put('/user/change-password', data)
+// Common HA Functionality
 export const forgotPasswordForHAFn = async(data: forgotPasswordHA) => await API.post('/ha/forgot-password',data)
+export const toggleAvailabilityFn = async() => await API.put('/ha/toggle-availability', {})
+export const setLeaveFn = async(data: HALeave) => await API.post('/ha/set-leave', data)
+export const fetchLeavesFn = async() => await API.get('/ha/get-leave')
+export const cancelLeaveFn = async() => await API.put('/ha/cancel-leave')
+export const changeSecretFn = async(data: changeSecret) => await API.put('/ha/update', data)
+
+//HA Feeds Functionality
+export const createFeedFn = async(data: createFeed) => await API.post('/feed/create', data)
+export const fetchFeedsFn = async() => await API.get('/feed/')
+export const deleteFeedFn = async(id: string) => await API.delete(`/feed/delete/${id}`)
+export const updateFeedFn = async(id : string, data: createFeed) => await API.put(`/feed/update/${id}`, data)
+
+//HA Category Functionality
+export const addCategoryFn = async(data: {name: string}) => await API.post('/inventory/categories/add', data)
+export const fetchCategoriesFn = async() => await API.get('/inventory/categories')
+export const categoryCountFn = async() => await API.get('/inventory/categories/counts')
+export const expiredMedicineFn = async() => await API.get('/inventory/medicines-expired')
+export const updateCategoryFn = async(id: string, data: {name: string}) => await API.put(`/inventory/categories/${id}`, data)
+export const deleteCategoryFn = async(id: string) => await API.delete(`/inventory/categories/${id}`)
+
+//HA Medicine Functionality
+export const fetchMedicinesFn = async() => await API.get('/inventory/medicines/')
+export const addMedicinesFn = async(data: {name: string, category_id: string, unit: string,}) => await API.post('/inventory/medicines', data)
+export const updateMedicinesFn = async(id: string, data: {name: string, category_id: string, quantity: number, unit: string, expiry_date: string}) => await API.put(`/inventory/medicines/${id}`, data)
+export const deleteMedicineFn = async(id: string) => await API.delete(`/inventory/medicines/${id}`)
+
+//HA Stock Functionality
+export const fetchTransactionFn = async() => await API.get('/inventory/transactions/')
+export const addTransactionFn = async(data: {medicine_id: string, quantity: number, reason:string, batch_name:string, expiry_date:string}) => await API.post('/inventory/transactions/add', data)
+export const removeTransactionFn = async(data: {batch_id: string, quantity: number, reason:string}) => await API.post('/inventory/transactions/remove', data)
+
+//HA bacth Functionality
+export const updateBatchFn = async(id:string, data:{ quantity:number, expiry_date: string}) => await API.put(`/inventory/medicine/batch/update/${id}`,data)
+export const deleteBatchFn = async(id:string) => await API.delete(`/inventory/medicine/batch/delete/${id}`)
+export const deleteBatchByIdFn = async(id:string) => await API.delete(`/inventory/medicine/batch/expired/delete/${id}`)
+
+//HA Illness Functionality
+export const createIllnessFn = async(data:{name: string, type: string, description: string}) => await API.post('/illness/create', data)
+export const fetchIllnessFn = async()=> await API.get('/illness/')
+export const updateIllnessFn = async(id:string,data:{name:string, type:string, description:string}) => await API.put(`/illness/update/${id}`,data)
+export const deleteIllnessFn = async(id:string) => await API.delete(`/illness/delete/${id}`)

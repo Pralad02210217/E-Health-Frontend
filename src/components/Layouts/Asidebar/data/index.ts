@@ -19,18 +19,6 @@ export const NAV_DATA = [
           {
             title: "Feeds",
             url: "/feeds",
-          },
-          {
-            title: "Inventory",
-            url: "/inventory",
-          },
-          {
-            title: "Stocks",
-            url: "/inventory/stock",
-          },
-          {
-            title: "Illness",
-            url: "/illness"
           }
         ],
       },
