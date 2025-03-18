@@ -41,6 +41,9 @@ export default function IllnessPage() {
 
   return (
     <Card className="p-4">
+        <div className='text-2xl bold'>
+            Diseases
+        </div>
       <CardContent>
         <div className="flex justify-end mb-4">
           <Button className='bg-blue-600 text-white hover:bg-blue-700' onClick={() => setIsAddModalOpen(true)}>Add Illness</Button>

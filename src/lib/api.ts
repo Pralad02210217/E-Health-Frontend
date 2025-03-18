@@ -139,6 +139,7 @@ export const setLeaveFn = async(data: HALeave) => await API.post('/ha/set-leave'
 export const fetchLeavesFn = async() => await API.get('/ha/get-leave')
 export const cancelLeaveFn = async() => await API.put('/ha/cancel-leave')
 export const changeSecretFn = async(data: changeSecret) => await API.put('/ha/update', data)
+export const getUsersFn = async() => await API.get(`/user/users`)
 
 //HA Feeds Functionality
 export const createFeedFn = async(data: createFeed) => await API.post('/feed/create', data)
@@ -162,6 +163,7 @@ export const deleteMedicineFn = async(id: string) => await API.delete(`/inventor
 
 //HA Stock Functionality
 export const fetchTransactionFn = async() => await API.get('/inventory/transactions/')
+export const useTransactionFn = async(data:{medicine_id:string, quantity:number, reason:string, patient_id:string}) => await API.post(`/inventory/transactions/use`, data)
 export const addTransactionFn = async(data: {medicine_id: string, quantity: number, reason:string, batch_name:string, expiry_date:string}) => await API.post('/inventory/transactions/add', data)
 export const removeTransactionFn = async(data: {batch_id: string, quantity: number, reason:string}) => await API.post('/inventory/transactions/remove', data)
 
@@ -175,3 +177,9 @@ export const createIllnessFn = async(data:{name: string, type: string, descripti
 export const fetchIllnessFn = async()=> await API.get('/illness/')
 export const updateIllnessFn = async(id:string,data:{name:string, type:string, description:string}) => await API.put(`/illness/update/${id}`,data)
 export const deleteIllnessFn = async(id:string) => await API.delete(`/illness/delete/${id}`)
+
+//HA Treatment Functionality
+export const createTreatmentFn = async(data:{ patient_id:string, doctor_id: string, illness_id:string, severity:string, notes:string, medicines:  { medicine_id: string; dosage: string; }[];}) => await API.post(`/treatment/create/`, data)
+export const updateTreatmentFn =  async(id: string,data:{ patient_id:string, doctor_id: string, illness_id:string, severity:string, notes:string}) => await API.put(`/treatment/update/$${id}`, data)
+export const fetchTreatmentFn = async(id:string) => await API.get(`/treatment/patient/${id}`)
+export const deleteTreatmentFn = async(id:string) => await API.delete(`/treatment/delete/${id}`)

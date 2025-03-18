@@ -35,13 +35,15 @@ export default function StockPage() {
 
   const transactions = transactionsData?.data.transactions || [];
 
-  const filteredTransactions = transactions.filter((transaction: any) => {
+const filteredTransactions = transactions.filter((transaction: any) => {
     const typeMatch = !filterType || transaction.type === filterType;
+    const medicineName = transaction.medicine_name || ''; // Default to empty string if null/undefined
+    const reason = transaction.reason || ''; // Default to empty string if null/undefined
     const searchMatch =
-      transaction.medicine_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      transaction.reason.toLowerCase().includes(searchQuery.toLowerCase());
+        medicineName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        reason.toLowerCase().includes(searchQuery.toLowerCase());
     return typeMatch && searchMatch;
-  });
+});
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
