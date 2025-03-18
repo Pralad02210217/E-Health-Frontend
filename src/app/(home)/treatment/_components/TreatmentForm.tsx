@@ -166,6 +166,23 @@ export default function TreatmentForm() {
         variant: "destructive"
       })
     }
+      // Step 1: Check stock availability
+    const stockMap = new Map();
+    medicines?.data?.medicines?.forEach((m: { id: string; stock: number }) => {
+      stockMap.set(m.id, m.stock);
+    });
+
+    const insufficientStock = data.medicines.filter((m) => {
+      return stockMap.has(m.medicineId) && stockMap.get(m.medicineId) < m.quantity;
+    });
+
+    if (insufficientStock.length > 0) {
+      return toast({
+        title: "Insufficient Stock",
+        description: `Not enough stock for: ${insufficientStock.map((m) => m.medicineId).join(", ")}`,
+        variant: "destructive",
+      });
+    }
 
     try {
       // Create treatment record
@@ -221,7 +238,6 @@ export default function TreatmentForm() {
     value: m.id
   })) || [];
 
-  console.log(users)
 
   return (
     <Card className="w-full max-w-4xl mx-auto">
