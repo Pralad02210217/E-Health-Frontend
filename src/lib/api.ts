@@ -8,13 +8,11 @@ type LoginType = {
     password: string
 }
 
-
-
 type RegisterType = {
     name: string;
     student_id?: string;
     email?: string; 
-    contact_number: string;
+    contact_number?: string;
     password?: string;
     confirmPassword?: string; 
     gender: "MALE" | "FEMALE" | "OTHERS";
@@ -22,6 +20,7 @@ type RegisterType = {
     department_id?: string; 
     std_year?: string; 
     user_type: "STUDENT" | "STAFF" | "DEAN" | "NON-STAFF" | "HA";
+    data_of_birth?:string;
     role?: "STUDENT" | "STAFF" | "DEAN" | "HA";
     secret_word?: string
 }
@@ -163,7 +162,7 @@ export const deleteMedicineFn = async(id: string) => await API.delete(`/inventor
 
 //HA Stock Functionality
 export const fetchTransactionFn = async() => await API.get('/inventory/transactions/')
-export const useTransactionFn = async(data:{medicine_id:string, quantity:number, reason:string, patient_id:string}) => await API.post(`/inventory/transactions/use`, data)
+export const useTransactionFn = async(data:{medicine_id:string, quantity:number, reason:string, patient_id?:string,family_member_id?:string}) => await API.post(`/inventory/transactions/use`, data)
 export const addTransactionFn = async(data: {medicine_id: string, quantity: number, reason:string, batch_name:string, expiry_date:string}) => await API.post('/inventory/transactions/add', data)
 export const removeTransactionFn = async(data: {batch_id: string, quantity: number, reason:string}) => await API.post('/inventory/transactions/remove', data)
 
@@ -179,7 +178,11 @@ export const updateIllnessFn = async(id:string,data:{name:string, type:string, d
 export const deleteIllnessFn = async(id:string) => await API.delete(`/illness/delete/${id}`)
 
 //HA Treatment Functionality
-export const createTreatmentFn = async(data:{ patient_id:string, doctor_id: string, illness_id:string, severity:string, notes:string, medicines:  { medicine_id: string; dosage: string; }[];}) => await API.post(`/treatment/create/`, data)
+export const createTreatmentFn = async(data:{ patient_id?:string,family_member_id?:string, doctor_id: string, illness_ids:Array<string>, severity:string, notes:string, medicines:  { medicine_id: string; dosage: string; }[];}) => await API.post(`/treatment/create/`, data)
 export const updateTreatmentFn =  async(id: string,data:{ patient_id:string, doctor_id: string, illness_id:string, severity:string, notes:string}) => await API.put(`/treatment/update/$${id}`, data)
 export const fetchTreatmentFn = async(id:string) => await API.get(`/treatment/patient/${id}`)
 export const deleteTreatmentFn = async(id:string) => await API.delete(`/treatment/delete/${id}`)
+export const fetchAllTreatmentFn = async()=> await API.get(`/treatment/patientAll`)
+
+//HA Treatment for StaffFamily Functionality
+export const createStaffFamilyFn = async(data:{name:string, staff_id:string, gender:string, contact_number:string,blood_type?: "O+" | "O-" | "A+" | "A-" | "B+" | "B-" | "AB+" | "AB-"; relation:string, date_of_birth:Date}) => await API.post(`staffFamily/create/`,data)

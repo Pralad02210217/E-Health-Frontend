@@ -101,7 +101,7 @@ export default function SignUp() {
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values)
+
     mutate(values, {
       onSuccess: () => {
         setIsSubmitted(true);

@@ -1,7 +1,7 @@
 'use client'
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { createTreatmentFn, fetchIllnessFn, fetchMedicinesFn, getUsersFn, useTransactionFn } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
@@ -29,58 +29,68 @@ import { Loader2, Search, Plus, Trash2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
 import useAuth from "@/hooks/use-auth";
+import { Treatmentschema } from "@/lib/validations";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { FamilyRegistrationForm } from "./FamilyRegisterForm";
+import { SignUpDialog } from "./RegisterDialog";
 
 
-const schema = z.object({
-  userType: z.enum(["Student", "Non-Student"]),
-  contactNumber: z.string().min(8, "Contact number must be at least 8 digits"),
-  studentNumber: z.string().optional().nullable(),
-  patientName: z.string().min(1, "Patient name is required"),
-  gender: z.string().optional().nullable(),
-  illnessId: z.string().min(1, "Illness is required"),
-  diagnosis: z.string().min(5, "Diagnosis must be at least 5 characters"),
-  severity: z.enum(["MILD", "MODERATE", "SEVERE"]),
-  patientId: z.string().optional(),
-  medicines: z.array(
-    z.object({
-      medicineId: z.string().min(1, "Medicine is required"),
-      quantity: z.number().min(1, "Quantity must be at least 1"),
-      dosage: z.string().min(1, "Dosage is required")
-    })
-  ).min(1, "At least one medicine is required")
-});
 
 export default function TreatmentForm() {
+
+  const [selectedStaff, setSelectedStaff] = useState<any>(null);
+  const [selectedFamilyMember, setSelectedFamilyMember] = useState<any>(null);
+  const [isRegisterFamilyMemberOpen, setIsRegisterFamilyMemberOpen] = useState(false);
+  const [needRegistration, setNeedRegistration] = useState(false)
+
+  const queryClient = useQueryClient();
+
   const form = useForm({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(Treatmentschema),
     defaultValues: {
       userType: "Student",
       contactNumber: "",
       studentNumber: "",
       patientName: "",
       gender: "",
-      illnessId: "",
+      illnessIds: [""],
       diagnosis: "",
       severity: "MILD",
       patientId:"",
-      medicines: [{ medicineId: "", quantity: 1, dosage: "" }]
+      medicines: [{ medicineId: "", quantity: 1, dosage: "" }],
+      staffId: "",
+      familyMemberId: ""
     }
   });
-
-  const { fields, append, remove } = useFieldArray({ 
-    control: form.control, 
-    name: "medicines" 
-  });
-
-  const userType = form.watch("userType");
-  const contactNumber = form.watch("contactNumber");
-
-  // Data fetching
-  const { data: users, isLoading: usersLoading } = useQuery({ 
-    queryKey: ["users"], 
-    queryFn: getUsersFn 
-  });
   
+// Define your form type explicitly from the schema
+  type FormValues = z.infer<typeof Treatmentschema>;
+
+  // For medicines array
+  const medicinesArray = useFieldArray<FormValues>({
+    control: form.control,
+    name: "medicines"
+  });
+
+// For illnesses array - with more explicit typing
+  const illnessArray = useFieldArray({
+    control: form.control,
+    name: "illnessIds" as any
+  });
+
+  // Then use these destructured variables
+  const { fields, append, remove } = medicinesArray;
+  const { fields: illnessFields, append: appendIllness, remove: removeIllness } = illnessArray;
+
+    const userType = form.watch("userType");
+    const contactNumber = form.watch("contactNumber");
+
+    // Data fetching
+    const { data: users, isLoading: usersLoading } = useQuery({ 
+      queryKey: ["users"], 
+      queryFn: getUsersFn 
+    });
+    
   const { data: medicines, isLoading: medicinesLoading } = useQuery({ 
     queryKey: ["medicines"], 
     queryFn: fetchMedicinesFn 
@@ -129,7 +139,7 @@ export default function TreatmentForm() {
     // Simulate network delay (you can remove setTimeout if your lookup is already async)
     setTimeout(() => {
       const patient = users?.data?.users?.find(
-        (u: { contact_number: string; name: string; gender?: string; student_id?: string }) => 
+        (u: { contact_number: string; name: string; gender?: string; student_id?: string; id?: string }) => 
           u.contact_number === contactNumber
       );
       
@@ -139,25 +149,25 @@ export default function TreatmentForm() {
         if (patient.student_id && userType === "Student") {
           form.setValue("studentNumber", patient.student_id);
         }
-        form.setValue("patientId", patient.id);
+        form.setValue("patientId", patient.id || '');
         toast({
           title: "Patient Found",
           description: `Patient ${patient.name} found in the system.`
         });
       } else {
+        setNeedRegistration(true)
         toast({
           title: "Patient Not Found",
           description: "No patient found with this contact number.",
           variant: "destructive"
         });
       }
-      console.log(`this is patient data: ${form.getValues('patientId')}`)
       
       setIsLookupLoading(false);
     }, 500); // Simulating a network delay of 500ms
   };
 
-  const onSubmit = async (data: z.infer<typeof schema>) => {
+  const onSubmit = async (data: z.infer<typeof Treatmentschema>) => {
 
     if (user.userType != 'HA'){
       return toast({
@@ -167,62 +177,83 @@ export default function TreatmentForm() {
       })
     }
       // Step 1: Check stock availability
-    const stockMap = new Map();
-    medicines?.data?.medicines?.forEach((m: { id: string; stock: number }) => {
-      stockMap.set(m.id, m.stock);
-    });
+    const insufficientStockMedicines = data.medicines.filter((prescribedMedicine) => {
+    // Find the medicine in the available medicines list
+    const medicineDetails = medicines?.data?.medicines?.find(
+      (m: { id: string; stock: number }) => m.id === prescribedMedicine.medicineId
+    );
 
-    const insufficientStock = data.medicines.filter((m) => {
-      return stockMap.has(m.medicineId) && stockMap.get(m.medicineId) < m.quantity;
-    });
+    // If medicine not found or stock is insufficient, return true
+    return !medicineDetails || medicineDetails.stock < prescribedMedicine.quantity;
+  });
 
-    if (insufficientStock.length > 0) {
-      return toast({
-        title: "Insufficient Stock",
-        description: `Not enough stock for: ${insufficientStock.map((m) => m.medicineId).join(", ")}`,
-        variant: "destructive",
-      });
-    }
-
-    try {
-      // Create treatment record
-      const treatment = await treatmentMutation.mutateAsync({
-        patient_id: form.getValues("patientId")!,
-        doctor_id: user.userId, // Replace with actual doctor ID from your auth context
-        illness_id: data.illnessId,
-        severity: data.severity,
-        notes: data.diagnosis,
-        medicines: data.medicines.map(m => ({ 
-          medicine_id: m.medicineId, 
-          dosage: m.dosage 
-        }))
-      });
-
-      // Update medicine stock for each prescribed medicine
-      await Promise.all(
-        data.medicines.map(m => transactionMutation.mutateAsync({
-          medicine_id: m.medicineId,
-          quantity: m.quantity,
-          reason: "Prescription",
-          patient_id: treatment.data.patient_id
-        }))
+  // If any medicines have insufficient stock, prevent submission
+  if (insufficientStockMedicines.length > 0) {
+    // Create a more detailed error message
+    const errorMessage = insufficientStockMedicines.map((medicine) => {
+      const medicineDetails = medicines?.data?.medicines?.find(
+        (m: { id: string; name: string; stock: number }) => m.id === medicine.medicineId
       );
       
-      toast({ 
-        title: "Success",
-        description: "Treatment recorded and stock updated successfully" 
-      });
-      
-      // Reset form
-      form.reset();
-    } catch (error: any) {
-      toast({ 
-        title: "Error",
-        description: error.data.message || "Treatment recording failed", 
-        variant: "destructive" 
-      });
+      return `${medicineDetails?.name || 'Unknown Medicine'}: Requested ${medicine.quantity}, Available ${medicineDetails?.stock || 0}`;
+    }).join(", ");
+
+    return toast({
+      title: "Insufficient Stock",
+      description: `Cannot proceed. Insufficient stock for: ${errorMessage}`,
+      variant: "destructive",
+    });
+  }
+
+   try {
+        const isStaffFamily = selectedStaff;
+
+        // Determine patient or family member ID
+        const patientId = isStaffFamily ? null : form.getValues("patientId")!;
+        const familyMemberId = isStaffFamily ? form.getValues("patientId")! : null;
+
+        // 🟢 Create treatment record
+        const treatment = await treatmentMutation.mutateAsync({
+          patient_id: patientId!,
+          family_member_id: familyMemberId!,
+          doctor_id: user.userId, // Logged-in HA user
+          illness_ids: data.illnessIds,
+          severity: data.severity,
+          notes: data.diagnosis,
+          medicines: data.medicines.map(m => ({ 
+            medicine_id: m.medicineId, 
+            dosage: m.dosage 
+          }))
+        });
+
+        // 🟢 Update medicine stock for each prescribed medicine
+        await Promise.all(
+          data.medicines.map(m => transactionMutation.mutateAsync({
+            medicine_id: m.medicineId,
+            quantity: m.quantity,
+            reason: "Prescription",
+            patient_id: patientId!,
+            family_member_id: familyMemberId!
+          }))
+        );
+
+        toast({ 
+          title: "Success",
+          description: "Treatment recorded and stock updated successfully" 
+        });
+
+        queryClient.invalidateQueries({ queryKey: ['treatments'] });
+
+        // 🟢 Reset form
+        form.reset();
+      } catch (error: any) {
+        toast({ 
+          title: "Error",
+          description: error.data.message || "Treatment recording failed", 
+          variant: "destructive" 
+        });
+      }
     }
-  };
 
   const isLoading = usersLoading || medicinesLoading || illnessesLoading;
   const isMutating = treatmentMutation.isPending || transactionMutation.isPending;
@@ -236,6 +267,18 @@ export default function TreatmentForm() {
   const medicineOptions = medicines?.data?.medicines?.map((m: { name: any; id: any; }) => ({
     label: m.name,
     value: m.id
+  })) || [];
+
+    const staffOptions = users?.data?.users
+    ?.filter((u: any) => u.userType === 'STAFF')
+    .map((staff: any) => ({
+      label: staff.name,
+      value: staff.id,
+    })) || [];
+
+  const familyMemberOptions = selectedStaff?.family_members?.map((member: any) => ({
+    label: member.name,
+    value: member.id,
   })) || [];
 
 
@@ -260,6 +303,14 @@ export default function TreatmentForm() {
                 {/* Patient Information Section */}
                 <div className="space-y-4 md:col-span-2">
                   <h3 className="text-lg font-medium">Patient Information</h3>
+                  {userType === 'StaffFamilyMember' &&  selectedStaff &&(
+                  <FamilyRegistrationForm staffId={selectedStaff.id} onSuccess={() => {
+                                    //refresh the data
+                    }}/>
+                  )}
+                  {(userType === "Non-Student" || (userType === "Student" && needRegistration)) && (
+                      <SignUpDialog />
+                    )}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
@@ -275,13 +326,90 @@ export default function TreatmentForm() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="Student">Student</SelectItem>
+                              <SelectItem value="Student">Student/Staff</SelectItem>
                               <SelectItem value="Non-Student">Non-Student</SelectItem>
+                              <SelectItem value="StaffFamilyMember">Staff Family Member</SelectItem>
                             </SelectContent>
                           </Select>
                         </FormItem>
                       )}
                     />
+                    {userType === 'StaffFamilyMember' && (
+                      <>
+                        <FormField
+                          control={form.control}
+                          name="staffId"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Staff Member</FormLabel>
+                              <Select
+                                onValueChange={(value) => {
+                                  field.onChange(value);
+                                  setSelectedStaff(users?.data?.users?.find((u: any) => u.id === value));
+                                  setSelectedFamilyMember(null);
+                                }}
+                                value={field.value?.toString()}
+                              >
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select staff member" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {staffOptions.map((option: any) => (
+                                    <SelectItem key={option.value} value={option.value}>
+                                      {option.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        {selectedStaff && selectedStaff.family_members && selectedStaff.family_members.length > 0 && (
+                        <FormField
+                          control={form.control}
+                          name="familyMemberId"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Family Member</FormLabel>
+                              <Select
+                                onValueChange={(value) => {
+                                  field.onChange(value);
+                                  const familyMember = selectedStaff?.family_members?.find(
+                                    (member: any) => member.id === value
+                                  );
+                                  if (familyMember) {
+                                    form.setValue('patientName', familyMember.name);
+                                    form.setValue('gender', familyMember.gender || '');
+                                    form.setValue('contactNumber', familyMember.contact_number || '');
+                                    form.setValue('patientId', familyMember.id || '');
+                                    //set other form fields as you need them.
+                                  }
+                                }}
+                                value={field.value}
+                              >
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select family member" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {familyMemberOptions.map((option: any) => (
+                                    <SelectItem key={option.value} value={option.value}>
+                                      {option.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                            )}
+                          />
+                        )}
+                      </>
+                    )}
                     
                     <div className="flex space-x-2 items-end">
                       <FormField
@@ -361,33 +489,65 @@ export default function TreatmentForm() {
                 
                 {/* Diagnosis Section */}
                 <div className="space-y-4 md:col-span-2">
-                  <h3 className="text-lg font-medium">Diagnosis</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="illnessId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Illness</FormLabel>
-                          <Select
-                            value={field.value}
-                            onValueChange={field.onChange}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select illness" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {illnessOptions.map((option: any) => (
-                                <SelectItem key={option.value} value={option.value}>
-                                  {option.label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                 <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-medium">Diagnoses</h3>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => appendIllness("")}
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Illness
+                    </Button>
+                  </div>
+                  {illnessFields.length === 0 && (
+                    <p className="text-sm text-gray-500">No illnesses added yet</p>
+                  )}
+
+                  {illnessFields.map((field, index) => (
+                    <div key={field.id} className="p-4 border rounded-md">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+                        {/* Fixed: Corrected the field name to match the schema */}
+                        <FormField
+                          control={form.control}
+                          name={`illnessIds.${index}`}
+                          render={({ field }) => (
+                            <FormItem className="flex-1">
+                              <FormLabel>Illness</FormLabel>
+                              <Select
+                                value={field.value}
+                                onValueChange={field.onChange}
+                              >
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select illness" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {illnessOptions.map((option: any) => (
+                                    <SelectItem key={option.value} value={option.value}>
+                                      {option.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          onClick={() => removeIllness(index)}
+                          disabled={illnessFields.length === 1}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      </div>
+                    ))}
                     
                     <FormField
                       control={form.control}
@@ -396,12 +556,14 @@ export default function TreatmentForm() {
                         <FormItem>
                           <FormLabel>Severity</FormLabel>
                           <Select
-                            defaultValue={field.value}
+                            value={field.value}
                             onValueChange={field.onChange}
                           >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select severity" />
-                            </SelectTrigger>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select severity" />
+                              </SelectTrigger>
+                            </FormControl>
                             <SelectContent>
                               <SelectItem value="MILD">Mild</SelectItem>
                               <SelectItem value="MODERATE">Moderate</SelectItem>
@@ -430,7 +592,7 @@ export default function TreatmentForm() {
                         </FormItem>
                       )}
                     />
-                  </div>
+ 
                 </div>
                 
                 {/* Medicine Section */}
@@ -462,12 +624,14 @@ export default function TreatmentForm() {
                             <FormItem>
                               <FormLabel>Medicine</FormLabel>
                               <Select
-                                defaultValue={field.value}
+                                value={field.value}
                                 onValueChange={field.onChange}
                               >
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select medicine" />
-                                </SelectTrigger>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select medicine" />
+                                  </SelectTrigger>
+                                </FormControl>
                                 <SelectContent>
                                   {medicineOptions.map((option : any) => (
                                     <SelectItem key={option.value} value={option.value}>
@@ -546,7 +710,7 @@ export default function TreatmentForm() {
 
               <Button 
                 type="submit" 
-                className="w-full" 
+                className="w-full text-[15px] h-[40px] text-white font-semibold bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg hover:opacity-90" 
                 disabled={isMutating}
               >
                 {isMutating && (

@@ -35,6 +35,10 @@ export const NAV_DATA = [
           {
             title: "Treatments",
             url: '/treatment'
+          },
+          {
+            title: "Patient Histroy",
+            url: 'history'
           }
         ],
       },
