@@ -186,3 +186,6 @@ export const fetchAllTreatmentFn = async()=> await API.get(`/treatment/patientAl
 
 //HA Treatment for StaffFamily Functionality
 export const createStaffFamilyFn = async(data:{name:string, staff_id:string, gender:string, contact_number:string,blood_type?: "O+" | "O-" | "A+" | "A-" | "B+" | "B-" | "AB+" | "AB-"; relation:string, date_of_birth:Date}) => await API.post(`staffFamily/create/`,data)
+
+//HA dashboard
+export const fetchDashboardFn = async() => await API.get(`/dashboard`)

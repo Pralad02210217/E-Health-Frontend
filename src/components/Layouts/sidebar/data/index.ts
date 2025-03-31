@@ -13,6 +13,10 @@ export const NAV_DATA = [
             url: "/",
           },
           {
+            title: "Dashboard",
+            url: '/dashboard'
+          },
+          {
             title: "Leaves",
             url: "/leaves",
           },
