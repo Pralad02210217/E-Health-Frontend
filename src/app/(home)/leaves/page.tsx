@@ -33,7 +33,6 @@ const Leaves = () => {
     refetch();
   };
 
-  console.log("User data:", user); // Debugging
 
   return (
     <div className="p-6 max-w-4xl mx-auto bg-white">

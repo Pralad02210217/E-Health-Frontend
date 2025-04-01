@@ -1,7 +1,5 @@
-"use client";
+'use client';
 
-import { SearchIcon } from "@/assets/icons";
-import Image from "next/image";
 import Link from "next/link";
 import { useSidebarContext } from "../sidebar/sidebar-context";
 import { MenuIcon } from "./icons";
@@ -9,9 +7,30 @@ import { Notification } from "./notification";
 import { ThemeToggleSwitch } from "./theme-toggle";
 import { UserInfo } from "./user-info";
 import Logo from "@/components/logo/index";
+import { Badge } from "@/components/ui/badge";
+import { useEffect } from "react";
+import useAuth from "@/hooks/use-auth";
+import { Phone } from "lucide-react";
+
+// A simple helper to format ISO dates to dd/mm/yyyy
+const formatDate = (dateString: any) => {
+  if (!dateString) return ""; // Handle cases where dateString is null or undefined
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-GB");
+};
 
 export function Header() {
+  const {user, refetch} = useAuth()
   const { toggleSidebar, isMobile } = useSidebarContext();
+  const available = user?.is_available;
+  const isOnLeave = user?.is_onLeave;
+    useEffect(() => {
+    const intervalId = setInterval(() => {
+      refetch();
+    }, 5000); // 5000 milliseconds = 5 seconds
+
+    return () => clearInterval(intervalId); // Cleanup interval on unmount
+  }, [refetch]); // Add refetch to the dependency array
 
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between border-b border-stroke bg-white px-4 py-5 shadow-1 dark:border-stroke-dark dark:bg-gray-dark md:px-5 2xl:px-10">
@@ -37,20 +56,39 @@ export function Header() {
       </div>
 
       <div className="flex flex-1 items-center justify-end gap-2 min-[375px]:gap-4">
-        <div className="relative w-full max-w-[300px]">
-          <input
-            type="search"
-            placeholder="Search"
-            className="flex w-full items-center gap-3.5 rounded-full border bg-gray-2 py-3 pl-[53px] pr-5 outline-none transition-colors focus-visible:border-primary dark:border-dark-3 dark:bg-dark-2 dark:hover:border-dark-4 dark:hover:bg-dark-3 dark:hover:text-dark-6 dark:focus-visible:border-primary"
-          />
+        {/* Replace Search Bar with Availability Information */}
 
-          <SearchIcon className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 max-[1015px]:size-5" />
-        </div>
+          <div className="flex items-center gap-3">
+            {isOnLeave ? (
+              <Badge className="px-2 py-1 text-sm bg-red-100 text-red-700">
+                On Leave from {formatDate(user?.start_date)} to {formatDate(user?.end_date)}
+              </Badge>
+            ) : (
+                <Badge
+                className={`px-2 py-1 text-sm flex items-center gap-1 ${
+                  available ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                }`}
+                >
+                {available ? (
+                  <>
+                  HA Available 🟢
+                  <Phone size={14} />
+                  17908911
+                  </>
+                ) : (
+                  <>
+                  <Phone size={14} />
+                  HA Briefly Unavailable 🔴
+                  <Phone size={14} />
+                  17908911
+                  </>
+                )}
+                </Badge>
+            )}
+          </div>
 
         <ThemeToggleSwitch />
-
         <Notification />
-
         <div className="shrink-0">
           <UserInfo />
         </div>

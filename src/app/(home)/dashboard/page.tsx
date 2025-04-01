@@ -1,10 +1,11 @@
 import React, { Suspense } from 'react'
-import DashbordCharts from './_components/DashbordCharts'
+
+import DashboardFinal from './_components/Dashboard'
 
 function page() {
   return (
     <Suspense>
-        <DashbordCharts />
+        <DashboardFinal />  
     </Suspense>
   )
 }
