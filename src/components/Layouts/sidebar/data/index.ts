@@ -3,9 +3,9 @@ import * as Icons from "../icons";
 
 export type NavItem = {
   title: string;
-  url?: string; // Optional because some items may not have a URL
+  url?: string; 
   icon: React.ComponentType;
-  items: NavItem[]; // Ensure TypeScript knows it's an array of the same type
+  items: NavItem[]; 
 };
 
 type NavSection = {

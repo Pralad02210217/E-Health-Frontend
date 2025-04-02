@@ -136,6 +136,7 @@ export const forgotPasswordForHAFn = async(data: forgotPasswordHA) => await API.
 export const toggleAvailabilityFn = async() => await API.put('/ha/toggle-availability', {})
 export const setLeaveFn = async(data: HALeave) => await API.post('/ha/set-leave', data)
 export const fetchLeavesFn = async() => await API.get('/ha/get-leave')
+export const fetchContactFn = async() => await API.get('/ha/contact')
 export const cancelLeaveFn = async() => await API.put('/ha/cancel-leave')
 export const changeSecretFn = async(data: changeSecret) => await API.put('/ha/update', data)
 export const getUsersFn = async() => await API.get(`/user/users`)
