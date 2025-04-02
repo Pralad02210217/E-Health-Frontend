@@ -1,10 +1,10 @@
 import React, { Suspense } from 'react'
-import TreatmentForm from './_components/TreatmentForm'
+import TreatmentForm1 from './_components/TreatFormFinal'
 
 function page() {
   return (
     <Suspense>
-        <TreatmentForm />
+        <TreatmentForm1 />
     </Suspense>
   )
 }

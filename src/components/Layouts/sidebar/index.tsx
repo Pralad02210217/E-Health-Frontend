@@ -5,10 +5,11 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { NAV_DATA } from "./data";
-import { ArrowLeftIcon, ChevronUp } from "./icons";
+import { NAV_DATA, NavItem } from "./data";
+
 import { MenuItem } from "./menu-item";
 import { useSidebarContext } from "./sidebar-context";
+import { ArrowLeftIcon, ChevronUp } from "lucide-react";
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -95,79 +96,55 @@ export function Sidebar() {
 
                 <nav role="navigation" aria-label={section.label}>
                   <ul className="space-y-2">
-                    {section.items.map((item) => (
-                      <li key={item.title}>
-                        {item.items.length ? (
-                          <div>
-                            <MenuItem
-                              isActive={item.items.some(
-                                ({ url }) => url === pathname,
+                  {section.items.map((item: NavItem) => (
+                    <li key={item.title}>
+                      {item.items.length ? (
+                        <div>
+                          <MenuItem
+                            isActive={item.items.some(({ url }) => url === pathname)}
+                            onClick={() => toggleExpanded(item.title)}
+                          >
+                            <span className="size-6 shrink-0">
+                              <item.icon aria-hidden="true" />
+                            </span>
+                            <span>{item.title}</span>
+                            <ChevronUp
+                              className={cn(
+                                "ml-auto rotate-180 transition-transform duration-200",
+                                expandedItems.includes(item.title) && "rotate-0"
                               )}
-                              onClick={() => toggleExpanded(item.title)}
-                            >
-                              <item.icon
-                                className="size-6 shrink-0"
-                                aria-hidden="true"
-                              />
+                              aria-hidden="true"
+                            />
+                          </MenuItem>
 
-                              <span>{item.title}</span>
+                          {expandedItems.includes(item.title) && (
+                            <ul className="ml-9 mr-0 space-y-1.5 pb-[15px] pr-0 pt-2" role="menu">
+                              {item.items.map((subItem: NavItem) => (
+                                <li key={subItem.title} role="none">
+                                  <MenuItem as="link" href={subItem.url || "#"} isActive={pathname === subItem.url}>
+                                    <span>{subItem.title}</span>
+                                  </MenuItem>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      ) : (
+                        <MenuItem
+                          className="flex items-center gap-3 py-3"
+                          as="link"
+                          href={item.url || "#"}
+                          isActive={pathname === item.url}
+                        >
+                          <span className="size-6 shrink-0">
+                              <item.icon aria-hidden="true" />
+                            </span>
+                            <span>{item.title}</span>
+                        </MenuItem>
+                      )}
+                    </li>
+                  ))}
 
-                              <ChevronUp
-                                className={cn(
-                                  "ml-auto rotate-180 transition-transform duration-200",
-                                  expandedItems.includes(item.title) &&
-                                    "rotate-0",
-                                )}
-                                aria-hidden="true"
-                              />
-                            </MenuItem>
-
-                            {expandedItems.includes(item.title) && (
-                              <ul
-                                className="ml-9 mr-0 space-y-1.5 pb-[15px] pr-0 pt-2"
-                                role="menu"
-                              >
-                                {item.items.map((subItem) => (
-                                  <li key={subItem.title} role="none">
-                                    <MenuItem
-                                      as="link"
-                                      href={subItem.url}
-                                      isActive={pathname === subItem.url}
-                                    >
-                                      <span>{subItem.title}</span>
-                                    </MenuItem>
-                                  </li>
-                                ))}
-                              </ul>
-                            )}
-                          </div>
-                        ) : (
-                          (() => {
-                            const href =
-                              "url" in item
-                                ? item.url + ""
-                                : "/" +
-                                  item.title.toLowerCase().split(" ").join("-");
-
-                            return (
-                              <MenuItem
-                                className="flex items-center gap-3 py-3"
-                                as="link"
-                                href={href}
-                                isActive={pathname === href}
-                              >
-                                <item.icon
-                                  className="size-6 shrink-0"
-                                  aria-hidden="true"
-                                />
-
-                                <span>{item.title}</span>
-                              </MenuItem>
-                            );
-                          })()
-                        )}
-                      </li>
-                    ))}
                   </ul>
                 </nav>
               </div>

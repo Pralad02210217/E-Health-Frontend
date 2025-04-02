@@ -36,6 +36,9 @@ interface Treatment {
   patientName: string;
   patientGender: string;
   patientBloodType: string;
+  bloodPressure: string | null;
+  forwardedByHospital: boolean;
+  forwardedToHospital: boolean;
   patientContactNumber: string;
   patientDateOfBirth: string;
   patientType: string;
@@ -58,6 +61,8 @@ export default function PatientHistory() {
     queryKey: ['treatments'],
     queryFn: fetchAllTreatmentFn,
   });
+
+  console.log(data)
 
   const treatments: Treatment[] = data?.data?.treatments || [];
 

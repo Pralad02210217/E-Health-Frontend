@@ -178,7 +178,7 @@ export const updateIllnessFn = async(id:string,data:{name:string, type:string, d
 export const deleteIllnessFn = async(id:string) => await API.delete(`/illness/delete/${id}`)
 
 //HA Treatment Functionality
-export const createTreatmentFn = async(data:{ patient_id?:string,family_member_id?:string, doctor_id: string, illness_ids:Array<string>, severity:string, notes:string, medicines:  { medicine_id: string; dosage: string; }[];}) => await API.post(`/treatment/create/`, data)
+export const createTreatmentFn = async(data:{ patient_id?:string,family_member_id?:string, doctor_id: string, illness_ids:Array<string>, severity:string, notes:string,blood_pressure?:string,forwarded_by_hospital?:boolean,forward_to_hospital?:boolean, medicines:  { medicine_id: string; dosage: string; }[];}) => await API.post(`/treatment/create/`, data)
 export const updateTreatmentFn =  async(id: string,data:{ patient_id:string, doctor_id: string, illness_id:string, severity:string, notes:string}) => await API.put(`/treatment/update/$${id}`, data)
 export const fetchTreatmentFn = async(id:string) => await API.get(`/treatment/patient/${id}`)
 export const deleteTreatmentFn = async(id:string) => await API.delete(`/treatment/delete/${id}`)

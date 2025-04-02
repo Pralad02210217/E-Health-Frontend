@@ -2,7 +2,7 @@ import React, { Suspense } from 'react'
 
 import DashboardFinal from './_components/Dashboard'
 
-function page() {
+function FinalDashboard() {
   return (
     <Suspense>
         <DashboardFinal />  
@@ -10,4 +10,4 @@ function page() {
   )
 }
 
-export default page
+export default FinalDashboard

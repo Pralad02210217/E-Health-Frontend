@@ -1,136 +1,76 @@
+import { Icon } from "lucide-react";
 import * as Icons from "../icons";
 
-export const NAV_DATA = [
+export type NavItem = {
+  title: string;
+  url?: string; // Optional because some items may not have a URL
+  icon: React.ComponentType;
+  items: NavItem[]; // Ensure TypeScript knows it's an array of the same type
+};
+
+type NavSection = {
+  label: string;
+  items: NavItem[];
+};
+
+export const NAV_DATA: NavSection[] = [
   {
     label: "MAIN MENU",
     items: [
       {
         title: "Dashboard",
-        icon: Icons.HomeIcon,
+        url: `/dashboard`,
+        icon: Icons.DashboardIcon,
+        items: [], 
+      },
+      {
+        title: "Leaves",
+        url: "/leaves",
+        icon: Icons.LeavesIcon,
+        items: [],
+      },
+      {
+        title: "Feeds",
+        url: "/feeds",
+        icon: Icons.FeedsIcon,
+        items: [],
+      },
+      {
+        title: "Inventory",
+        url: "/inventory",
+        icon: Icons.InventoryIcon,
         items: [
-          {
-            title: "eCommerce",
-            url: "/",
-          },
-          {
-            title: "Dashboard",
-            url: '/dashboard'
-          },
-          {
-            title: "Leaves",
-            url: "/leaves",
-          },
-          {
-            title: "Feeds",
-            url: "/feeds",
-          },
           {
             title: "Inventory",
             url: "/inventory",
+            icon: Icons.InventoryIcon,
+            items: [],
           },
           {
             title: "Stocks",
             url: "/inventory/stock",
+            icon: Icons.StocksIcon,
+            items: [],
           },
-          {
-            title: "Illness",
-            url: "/illness"
-          },
-          {
-            title: "Treatments",
-            url: '/treatment'
-          },
-          {
-            title: "Patient Histroy",
-            url: 'history'
-          }
         ],
       },
       {
-        title: "Calendar",
-        url: "/calendar",
-        icon: Icons.Calendar,
+        title: "Illness",
+        url: "/illness",
+        icon: Icons.IllnessIcon,
         items: [],
       },
       {
-        title: "Profile",
-        url: "/profile",
-        icon: Icons.User,
+        title: "Treatment",
+        url: "/treatment",
+        icon: Icons.TreatmentIcon,
         items: [],
       },
       {
-        title: "Forms",
-        icon: Icons.Alphabet,
-        items: [
-          {
-            title: "Form Elements",
-            url: "/forms/form-elements",
-          },
-          {
-            title: "Form Layout",
-            url: "/forms/form-layout",
-          },
-        ],
-      },
-      {
-        title: "Tables",
-        url: "/tables",
-        icon: Icons.Table,
-        items: [
-          {
-            title: "Tables",
-            url: "/tables",
-          },
-        ],
-      },
-      {
-        title: "Pages",
-        icon: Icons.Alphabet,
-        items: [
-          {
-            title: "Settings",
-            url: "/pages/settings",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    label: "OTHERS",
-    items: [
-      {
-        title: "Charts",
-        icon: Icons.PieChart,
-        items: [
-          {
-            title: "Basic Chart",
-            url: "/charts/basic-chart",
-          },
-        ],
-      },
-      {
-        title: "UI Elements",
-        icon: Icons.FourCircle,
-        items: [
-          {
-            title: "Alerts",
-            url: "/ui-elements/alerts",
-          },
-          {
-            title: "Buttons",
-            url: "/ui-elements/buttons",
-          },
-        ],
-      },
-      {
-        title: "Authentication",
-        icon: Icons.Authentication,
-        items: [
-          {
-            title: "Sign In",
-            url: "/auth/sign-in",
-          },
-        ],
+        title: "Patient History",
+        url: "/history",
+        icon: Icons.PatientHistoryIcon,
+        items: [],
       },
     ],
   },

@@ -11,11 +11,15 @@ export const Treatmentschema = z.object({
   studentNumber: z.string().optional().nullable(),
   staffId: z.string().optional(),
   familyMemberId: z.string().optional(),
+  blood_type: z.string().optional(),
   patientName: z.string().min(1, "Patient name is required"),
   gender: z.string().optional().nullable(),
   illnessIds: z.array(z.string().min(1, "Illness is required")).min(1, "At least one illness is required"),
   diagnosis: z.string().min(5, "Diagnosis must be at least 5 characters"),
   severity: z.enum(["MILD", "MODERATE", "SEVERE"]),
+  blood_pressure: z.string().optional(),
+  forward_to_hospital: z.boolean().optional(),
+  forwarded_by_hospital: z.boolean().optional(),
   patientId: z.string().optional(),
   medicines: z.array(
     z.object({
@@ -25,4 +29,6 @@ export const Treatmentschema = z.object({
     })
   ).min(1, "At least one medicine is required")
 });
+
+
 

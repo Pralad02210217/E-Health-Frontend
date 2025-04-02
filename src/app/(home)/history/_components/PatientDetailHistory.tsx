@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Pill, Calendar, FileText, Syringe, AlertCircle } from "lucide-react";
+import { Pill, Calendar, FileText, Syringe, AlertCircle, Heart, Hospital, ArrowRightCircle, ArrowLeftCircle } from "lucide-react";
 
 // Define the Treatment interface to match the one in PatientHistory
 interface Treatment {
@@ -10,6 +10,9 @@ interface Treatment {
   severity: string;
   createdAt: string;
   notes: string;
+  bloodPressure: string | null;
+  forwardedByHospital: boolean;
+  forwardedToHospital: boolean;
   medicines: { 
     medicineName: string; 
     medicineCount: number;
@@ -69,8 +72,32 @@ const TreatmentDetailsDialog: React.FC<TreatmentDetailsDialogProps> = ({
             </div>
           </div>
 
-          {/* Treatment ID and Date */}
-          <div className="grid grid-cols-2 gap-4">
+          {/* Hospital Transfer Status */}
+          {(selectedTreatment.forwardedByHospital || selectedTreatment.forwardedToHospital) && (
+            <div className="bg-purple-50 rounded-lg p-3 flex flex-col space-y-2">
+              <h3 className="font-semibold text-purple-800 flex items-center">
+                <Hospital className="w-5 h-5 mr-2" />
+                Hospital Transfer Information
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {selectedTreatment.forwardedByHospital && (
+                  <div className="flex items-center space-x-2">
+                    <ArrowLeftCircle className="w-4 h-4 text-purple-600" />
+                    <span className="text-sm text-purple-700">Forwarded by Hospital</span>
+                  </div>
+                )}
+                {selectedTreatment.forwardedToHospital && (
+                  <div className="flex items-center space-x-2">
+                    <ArrowRightCircle className="w-4 h-4 text-purple-600" />
+                    <span className="text-sm text-purple-700">Forwarded to Hospital</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Treatment ID, Date and Blood Pressure in a row */}
+          <div className="grid grid-cols-3 gap-4">
             <div className="flex items-center space-x-2">
               <AlertCircle className="w-5 h-5 text-gray-500" />
               <div>
@@ -78,12 +105,24 @@ const TreatmentDetailsDialog: React.FC<TreatmentDetailsDialogProps> = ({
                 <p className="text-sm font-medium">{selectedTreatment.treatmentId}</p>
               </div>
             </div>
-            <div className="flex items-center space-x-2 justify-end">
+            <div className="flex items-center space-x-2">
               <Calendar className="w-5 h-5 text-gray-500" />
-              <div className="text-right">
+              <div>
                 <p className="text-xs text-gray-500">Date</p>
                 <p className="text-sm font-medium">
                   {new Date(selectedTreatment.createdAt).toLocaleDateString()}
+                </p>
+                <p className="text-xs font-medium text-gray-600">
+                  {new Date(selectedTreatment.createdAt).toLocaleTimeString()}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2 justify-end">
+              <Heart className="w-5 h-5 text-red-500" />
+              <div className="text-right">
+                <p className="text-xs text-gray-500">Blood Pressure</p>
+                <p className="text-sm font-medium">
+                  {selectedTreatment.bloodPressure || 'Not recorded'}
                 </p>
               </div>
             </div>
