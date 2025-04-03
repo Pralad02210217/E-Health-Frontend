@@ -16,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/logo/index";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
 import { loginMutationFn, resendVerificationMutationFn } from "@/lib/api";
 import { useState } from "react";
@@ -24,6 +24,7 @@ import { useState } from "react";
 export default function Login() {
 
   const router = useRouter()
+  const pathname = usePathname()
   const [resend, setResend] = useState(false)
 
   const { mutate, isPending } = useMutation({
@@ -53,8 +54,22 @@ export default function Login() {
           router.replace(`/verify-mfa?email=${values.email}`)
           return;
         }
-        router.replace(`/`)
+        const userRole = response.data?.user?.role;
+          // Check for callbackUrl in the query parameters
+          const searchParams = new URLSearchParams(window.location.search);
+          const callbackUrl = searchParams.get('callbackUrl');
+          if (callbackUrl) {
+            router.replace(callbackUrl);
+          } else {
+            // Fallback to role-based redirect
+            if (userRole === 'HA') {
+              router.replace('/');
+            } else {
+              router.replace('/users/home');
+            }
+          }
       },
+
       onError: (error: any) =>{
         if(error.data.message.includes("Verify your email first")) setResend(true)
           toast({

@@ -10,24 +10,27 @@ import type { Metadata } from "next";
 import NextTopLoader from "nextjs-toploader";
 import type { PropsWithChildren } from "react";
 import { ASidebar } from "@/components/Layouts/Asidebar";
-import { Sidebar } from "@/components/Layouts/sidebar";
+import { SidebarProvider } from "@/components/Layouts/sidebar/sidebar-context";
+import { ASidebarProvider } from "@/components/Layouts/Asidebar/sidebar-context";
+
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | NextAdmin - Next.js Dashboard Kit",
-    default: "NextAdmin - Next.js Dashboard Kit",
+    template: "%s CST E-Health Admin Page",
+    default: "CST E-Health",
   },
   description:
-    "Next.js admin dashboard toolkit with 200+ templates, UI components, and integrations for fast dashboard development.",
+    "Infirmary Management System for CST",
 };
 
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
+    <ASidebarProvider>
       <div>
           <NextTopLoader showSpinner={false} />
 
           <div className="flex min-h-screen">
-            <Sidebar />
+            <ASidebar />
 
             <div className="w-full bg-gray-2 dark:bg-[#020d1a]">
               <Header />
@@ -38,5 +41,6 @@ export default function RootLayout({ children }: PropsWithChildren) {
             </div>
           </div>
       </div>
+    </ASidebarProvider>
   );
 }

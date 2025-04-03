@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from '@/hooks/use-toast';
 import { Loader } from 'lucide-react';
+import useAuth from '@/hooks/use-auth';
 interface Feed {
   id: string;
   title: string;
@@ -23,6 +24,7 @@ function FeedDisplay() {
     queryKey: ['feeds'],
     queryFn: fetchFeedsFn,
   });
+  const {user} = useAuth()
   const [editModalOpen, setEditModalOpen] = useState(false);
 const [editingFeed, setEditingFeed] = useState<Feed | null>(null);
   const [editedTitle, setEditedTitle] = useState('');
@@ -152,6 +154,8 @@ const [editingFeed, setEditingFeed] = useState<Feed | null>(null);
           </div>
 
           {/* Three-Dots Menu */}
+          {user?.userType === 'HA' && (
+
           <DropdownMenu>
             <DropdownMenuTrigger className="absolute top-2 right-2">⋮</DropdownMenuTrigger>
             <DropdownMenuContent>
@@ -159,6 +163,7 @@ const [editingFeed, setEditingFeed] = useState<Feed | null>(null);
               <DropdownMenuItem className="text-red-500" onClick={() => handleDeleteFeed(feed.id)}>Delete</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          )}
         </Card>
       ))}
        <Dialog open={editModalOpen} onOpenChange={setEditModalOpen}>

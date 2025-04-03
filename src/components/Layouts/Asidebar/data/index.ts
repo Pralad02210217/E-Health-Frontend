@@ -13,12 +13,16 @@ export const NAV_DATA = [
             url: "/",
           },
           {
-            title: "Leaves",
-            url: "/leaves",
+            title: "home",
+            url: "/users/home",
           },
           {
             title: "Feeds",
-            url: "/feeds",
+            url: "/users/feeds",
+          },
+          {
+            title: "Treatments",
+            url: "/users/history",
           }
         ],
       },

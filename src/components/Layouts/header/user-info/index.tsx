@@ -107,19 +107,31 @@ export function UserInfo() {
         <hr className="border-[#E8E8E8] dark:border-dark-3" />
 
         <div className="p-2 text-base text-[#4B5563] dark:text-dark-6 [&>*]:cursor-pointer">
-          <Link
-            href={"/profile"}
-            onClick={() => setIsOpen(false)}
+          <p
+            onClick={() => {
+              setIsOpen(false);
+              if (user?.userType === "HA") {
+                router.push('/profile');
+              } else {
+                router.push('/users/profile');
+              }
+            }}
             className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white"
           >
             <UserIcon />
 
             <span className="mr-auto text-base font-medium">View profile</span>
-          </Link>
+          </p>
 
-          <Link
-            href={"/settings"}
-            onClick={() => setIsOpen(false)}
+          <p
+            onClick={() => {
+              setIsOpen(false);
+              if (user?.userType === "HA") {
+                router.push('/settings');
+              } else {
+                router.push('/users/setting');
+              }
+            }}
             className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white"
           >
             <SettingsIcon />
@@ -127,7 +139,7 @@ export function UserInfo() {
             <span className="mr-auto text-base font-medium">
               Account Settings
             </span>
-          </Link>
+          </p>
         </div>
 
         <hr className="border-[#E8E8E8] dark:border-dark-3" />

@@ -28,12 +28,11 @@ export function Header() {
     useEffect(() => {
     const intervalId = setInterval(() => {
       refetch();
-    }, 5000); // 5000 milliseconds = 5 seconds
+    }, 5000); 
 
-    return () => clearInterval(intervalId); // Cleanup interval on unmount
-  }, [refetch]); // Add refetch to the dependency array
+    return () => clearInterval(intervalId); 
+  }, [refetch]); 
 
-  console.log(user)
 
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between border-b border-stroke bg-white px-4 py-5 shadow-1 dark:border-stroke-dark dark:bg-gray-dark md:px-5 2xl:px-10">
@@ -59,7 +58,7 @@ export function Header() {
       </div>
 
       <div className="flex flex-1 items-center justify-end gap-2 min-[375px]:gap-4">
-        {/* Replace Search Bar with Availability Information */}
+
 
           <div className="flex items-center gap-3">
             {isOnLeave ? (
@@ -76,14 +75,14 @@ export function Header() {
                   <>
                   HA Available 🟢
                   <Phone size={14} />
-                  {user.HA_Contact_Number!== '' ? user.HA_Contact_Number : "17980451"}
+                  {user?.HA_Contact_Number!== '' ? user?.HA_Contact_Number : "17980451"}
                   </>
                 ) : (
                   <>
                   <Phone size={14} />
                   HA Briefly Unavailable 🔴
                   <Phone size={14} />
-                  {user.HA_Contact_Number!== '' ? user.HA_Contact_Number : "17980451"}
+                  {user?.HA_Contact_Number!== '' ? user?.HA_Contact_Number : "17980451"}
                   </>
                 )}
                 </Badge>
@@ -91,7 +90,9 @@ export function Header() {
           </div>
 
         <ThemeToggleSwitch />
-        <Notification />
+        {user?.userType === "HA" && (
+          <Notification />
+        )}
         <div className="shrink-0">
           <UserInfo />
         </div>

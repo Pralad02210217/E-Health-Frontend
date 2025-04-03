@@ -247,7 +247,8 @@ export default function TreatmentForm1() {
       });
 
       queryClient.invalidateQueries({ queryKey: ['treatments'] });
-
+      setSelectedStaff(null);
+      setSelectedFamilyMember(null);
       // Reset form
       form.reset({
       userType: "Student",
@@ -265,7 +266,7 @@ export default function TreatmentForm1() {
       patientId: "",
       medicines: [{ medicineId: "", quantity: 1, dosage: "" }],
       staffId: "",
-      familyMemberId: ""
+      familyMemberId: "",
     });
     } catch (error:any) {
       toast({ 
