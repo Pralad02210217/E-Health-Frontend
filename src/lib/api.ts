@@ -184,9 +184,13 @@ export const updateTreatmentFn =  async(id: string,data:{ patient_id:string, doc
 export const fetchTreatmentFn = async(id:string) => await API.get(`/treatment/patient/${id}`)
 export const deleteTreatmentFn = async(id:string) => await API.delete(`/treatment/delete/${id}`)
 export const fetchAllTreatmentFn = async()=> await API.get(`/treatment/patientAll`)
+export const fetchStudentTreatmentFn = async() => await API.get(`/treatment/students`)
 
 //HA Treatment for StaffFamily Functionality
 export const createStaffFamilyFn = async(data:{name:string, staff_id:string, gender:string, contact_number:string,blood_type?: "O+" | "O-" | "A+" | "A-" | "B+" | "B-" | "AB+" | "AB-"; relation:string, date_of_birth:Date}) => await API.post(`staffFamily/create/`,data)
 
 //HA dashboard
 export const fetchDashboardFn = async() => await API.get(`/dashboard`)
+
+//Fetch Programmes
+export const fetchProgrammesFn = async() => await API.get('/user/programmes')
