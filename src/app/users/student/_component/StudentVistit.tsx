@@ -3,7 +3,6 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 
-// shadcn/ui components
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,7 +24,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
 import { Search, Calendar as CalendarIcon, Filter, Eye, RefreshCw } from 'lucide-react';
 import useAuth from '@/hooks/use-auth';
 import { fetchProgrammesFn, fetchStudentTreatmentFn } from '@/lib/api';

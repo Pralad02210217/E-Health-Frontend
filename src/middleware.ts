@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 
 // Define routes that require 'HA' user role
-const haOnlyRoutes = ["/dashboard", "/inventory","/inventory/medicines", "/illness", "/history", "/leaves", "/feeds", "/treatment"];
+const haOnlyRoutes = ["/dashboard", "/inventory","/inventory/medicines", "/illness", "/illnessCategory", "/history", "/leaves", "/feeds", "/treatment"];
 
 // Combine all protected routes
 const protectedRoutes = [...haOnlyRoutes, "/users/home", "/users/profile"];
@@ -96,6 +96,7 @@ export const config = {
         "/inventory",
         "/inventory/medicines",
         "/illness",
+        "/illnessCategory",
         "/history",
         "/leaves",
         "/feeds",

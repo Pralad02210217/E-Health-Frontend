@@ -173,10 +173,16 @@ export const deleteBatchFn = async(id:string) => await API.delete(`/inventory/me
 export const deleteBatchByIdFn = async(id:string) => await API.delete(`/inventory/medicine/batch/expired/delete/${id}`)
 
 //HA Illness Functionality
-export const createIllnessFn = async(data:{name: string, type: string, description: string}) => await API.post('/illness/create', data)
+export const createIllnessFn = async(data:{name: string, type: string, description: string, category_id?:string}) => await API.post('/illness/create', data)
 export const fetchIllnessFn = async()=> await API.get('/illness/')
-export const updateIllnessFn = async(id:string,data:{name:string, type:string, description:string}) => await API.put(`/illness/update/${id}`,data)
+export const updateIllnessFn = async(id:string,data:{name:string, type:string, description:string, category_id?:string}) => await API.put(`/illness/update/${id}`,data)
 export const deleteIllnessFn = async(id:string) => await API.delete(`/illness/delete/${id}`)
+
+//HA IllnessCategory Functionality
+export const createIllnessCategoryFn = async(data:{name:string}) => await API.post('/illnessCategory/create', data)
+export const fetchIllnessCategoryFn = async()=> await API.get('/illnessCategory/')
+export const updateIllnessCategoryFn = async(id:string,data:{name:string}) => await API.put(`/illnessCategory/update/${id}`,data)
+export const deleteIllnessCategoryFn = async(id:string) => await API.delete(`/illnessCategory/delete/${id}`)
 
 //HA Treatment Functionality
 export const createTreatmentFn = async(data:{ patient_id?:string,family_member_id?:string, doctor_id: string, illness_ids:Array<string>, severity:string, notes:string,blood_pressure?:string,forwarded_by_hospital?:boolean,forward_to_hospital?:boolean, medicines:  { medicine_id: string; dosage: string; }[];}) => await API.post(`/treatment/create/`, data)

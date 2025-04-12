@@ -58,7 +58,20 @@ export const NAV_DATA: NavSection[] = [
         title: "Illness",
         url: "/illness",
         icon: Icons.IllnessIcon,
-        items: [],
+        items: [
+          {
+            title: "Illness Category",
+            url: "/illnessCategory",
+            icon: Icons.IllnessIcon,
+            items: []
+          },
+          {
+            title: "Illness",
+            url: "/illness",
+            icon: Icons.IllnessIcon,
+            items: []
+          }
+        ],
       },
       {
         title: "Treatment",
