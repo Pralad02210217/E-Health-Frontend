@@ -1,12 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 
-// Define routes that require 'HA' user role
-const haOnlyRoutes = ["/dashboard", "/inventory","/inventory/medicines", "/illness", "/illnessCategory", "/history", "/leaves", "/feeds", "/treatment"];
+// Routes only accessible by 'HA'
+const haOnlyRoutes = [
+    "/dashboard",
+    "/inventory",
+    "/inventory/medicines",
+    "/illness",
+    "/illnessCategory",
+    "/history",
+    "/leaves",
+    "/feeds",
+    "/treatment",
+];
 
-// Combine all protected routes
-const protectedRoutes = [...haOnlyRoutes, "/users/home", "/users/profile"];
+// All protected routes
+const protectedRoutes = [
+    ...haOnlyRoutes,
+    "/users/home",
+    "/users/profile",
+    "/users/settings",
+    "/users/dean",
+    "/users/student",
+    "/users/history",
+    "/users/feeds",
+];
 
+// Publicly accessible
 const publicRoutes = [
     "/sign-in",
     "/sign-up",
@@ -16,27 +36,33 @@ const publicRoutes = [
     "/verify-mfa",
 ];
 
-// Define the structure of the Access Token payload
+// Role-based forbidden routes
+const forbiddenRoutesByRole: Record<string, string[]> = {
+    STUDENT: [...haOnlyRoutes, "/users/student", "/users/dean"],
+    STAFF: [...haOnlyRoutes, "/users/dean"],
+    HA: [], // No restrictions
+};
+
+// JWT payload shape
 interface AccessTokenPayload {
     userId: string;
     sessionId: string;
     userType: string;
 }
 
-// Function to get the JWT secret key
+// Get JWT secret key
 function getJwtSecretKey(): Uint8Array {
     const secret = process.env.JWT_SECRET;
-    if (!secret) {
-        throw new Error("JWT Secret key is not set in environment variables");
-    }
+    if (!secret) throw new Error("JWT Secret key is not set");
     return new TextEncoder().encode(secret);
 }
 
+// Middleware
 export async function middleware(req: NextRequest) {
     const path = req.nextUrl.pathname;
     const accessToken = req.cookies.get("accessToken")?.value;
 
-    // ✅ Allow access to public routes freely
+    // Allow access to public routes
     if (publicRoutes.some(route => path.startsWith(route))) {
         if (accessToken) {
             try {
@@ -48,17 +74,17 @@ export async function middleware(req: NextRequest) {
                 if (path !== redirectUrl) {
                     return NextResponse.redirect(new URL(redirectUrl, req.url));
                 }
-            } catch (error) {
-                return NextResponse.next(); // If token is invalid, allow them to access public pages
+            } catch {
+                return NextResponse.next();
             }
         }
         return NextResponse.next();
     }
 
-    // ✅ Require authentication for protected routes
+    // Require authentication for protected routes
     if (!accessToken) {
         const signInUrl = new URL("/sign-in", req.url);
-        signInUrl.searchParams.set("callbackUrl", req.nextUrl.pathname);
+        signInUrl.searchParams.set("callbackUrl", path);
         return NextResponse.redirect(signInUrl);
     }
 
@@ -68,13 +94,16 @@ export async function middleware(req: NextRequest) {
             algorithms: ["HS256"],
         });
 
-        // ✅ Prevent non-HA users from accessing HA-only routes
-        if (haOnlyRoutes.some(route => path.startsWith(route)) && payload.userType !== "HA") {
+        const userType = payload.userType;
+        const forbiddenRoutes = forbiddenRoutesByRole[userType] || [];
+
+        // Redirect if user tries to access forbidden route
+        if (forbiddenRoutes.some(route => path.startsWith(route))) {
             return NextResponse.redirect(new URL("/users/home", req.url));
         }
 
-        // ✅ Prevent non-HA users from getting stuck in an infinite loop at "/"
-        if (path === "/" && payload.userType !== "HA") {
+        // Prevent non-HA users from accessing root path "/"
+        if (path === "/" && userType !== "HA") {
             return NextResponse.redirect(new URL("/users/home", req.url));
         }
 
@@ -82,13 +111,14 @@ export async function middleware(req: NextRequest) {
     } catch (error) {
         console.error("Access token verification failed:", error);
         const signInUrl = new URL("/sign-in", req.url);
-        signInUrl.searchParams.set("callbackUrl", req.nextUrl.pathname);
+        signInUrl.searchParams.set("callbackUrl", path);
         const response = NextResponse.redirect(signInUrl);
         response.cookies.delete("accessToken");
         return response;
     }
 }
 
+// Routes middleware should match
 export const config = {
     matcher: [
         "/",
@@ -104,6 +134,10 @@ export const config = {
         "/users/home",
         "/users/profile",
         "/users/settings",
+        "/users/dean",
+        "/users/student",
+        "/users/history",
+        "/users/feeds",
         "/sign-in",
         "/sign-up",
         "/confirm-account",

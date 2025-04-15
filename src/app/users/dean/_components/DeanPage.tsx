@@ -26,7 +26,7 @@ const DeanPage = () => {
         <TabsContent value="ha-visits">
           <Card>
             <CardHeader>
-              <CardTitle>Health Aid Visits Management</CardTitle>
+              <CardTitle></CardTitle>
             </CardHeader>
             <CardContent>
               <HAVisitsTab />
