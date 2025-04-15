@@ -70,7 +70,7 @@ export async function middleware(req: NextRequest) {
                     audience: "user",
                     algorithms: ["HS256"],
                 });
-                const redirectUrl = payload.userType === "HA" ? "/" : "/users/home";
+                const redirectUrl = payload.userType === "HA" ? "/" : "/users/feeds";
                 if (path !== redirectUrl) {
                     return NextResponse.redirect(new URL(redirectUrl, req.url));
                 }
@@ -99,12 +99,12 @@ export async function middleware(req: NextRequest) {
 
         // Redirect if user tries to access forbidden route
         if (forbiddenRoutes.some(route => path.startsWith(route))) {
-            return NextResponse.redirect(new URL("/users/home", req.url));
+            return NextResponse.redirect(new URL("/users/feeds", req.url));
         }
 
         // Prevent non-HA users from accessing root path "/"
         if (path === "/" && userType !== "HA") {
-            return NextResponse.redirect(new URL("/users/home", req.url));
+            return NextResponse.redirect(new URL("/users/feeds", req.url));
         }
 
         return NextResponse.next();

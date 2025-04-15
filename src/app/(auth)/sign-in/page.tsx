@@ -65,7 +65,7 @@ export default function Login() {
             if (userRole === 'HA') {
               router.replace('/');
             } else {
-              router.replace('/users/home');
+              router.replace('/users/feeds');
             }
           }
       },
