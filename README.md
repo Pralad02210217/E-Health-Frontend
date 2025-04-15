@@ -72,7 +72,8 @@ Absolutely! Here's your beautifully polished and markdown-optimized `README.md` 
 src/
 ├── app/                   # Next.js 14 app directory
 │   ├── (auth)/            # Auth routes (login, register, etc.)
-│   ├── dashboard/         # Main dashboards (Student, HA, Dean)
+│   ├── (home)/            # User Interace for HA
+│   ├── users/             # User Interface for Student, HA, Dean
 │   └── layout.tsx         # Root layout component
 ├── components/
 │   ├── ui/                # Shadcn UI components
@@ -98,7 +99,7 @@ src/
 ### 📦 Installation
 
 ```bash
-git clone https://github.com/yourusername/cims-frontend.git
+git clone git@github.com:Pralad02210217/E-Health-Frontend.git
 cd cims-frontend
 npm install
 ```
@@ -144,17 +145,6 @@ This frontend communicates with a RESTful backend API for:
 
 ---
 
-## 🧪 Testing
-
-```bash
-# Run unit tests
-npm run test
-
-# Run end-to-end tests (if available)
-npm run test:e2e
-```
-
----
 
 ## 🔐 Security Features
 
@@ -208,12 +198,10 @@ Licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
 
 Having issues or feature requests?
 
-> Please [open an issue](https://github.com/yourusername/cims-frontend/issues) or contact the dev team.
+> Please [open an issue](https://github.com/Pralad02210217/E-Health-Frontend/issues) or contact the dev team.
 
 ---
 
-Made with 💙 by **Your Team Name**
+Made with 💙 by **E-Health CST**
 
 ---
-
-Let me know if you’d like a version with deployment steps (e.g., Vercel/Netlify) or screenshots!
