@@ -27,6 +27,10 @@ export const NAV_DATA = [
           {
             title: "Student Visits",
             url: "/users/student",
+          },
+          {
+            title: "Dean",
+            url: "/users/dean",
           }
         ],
       },

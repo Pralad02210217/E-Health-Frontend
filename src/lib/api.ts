@@ -200,3 +200,11 @@ export const fetchDashboardFn = async() => await API.get(`/dashboard`)
 
 //Fetch Programmes
 export const fetchProgrammesFn = async() => await API.get('/user/programmes')
+
+//Dean Functionality
+export const fetchHADetailsFn = async() => await API.get('/ha/get-ha-details')
+export const changeHAStatusFn = async(id: string, data:{status: string}) => await API.put(`/ha/change-status/${id}`,data)
+export const fetchStaffFn = async() => await API.get('/user/getStaff')
+export const updateStaffRoleFn = async(id: string, data:{type: string}) => await API.put(`/user/change-userType/${id}`,data)
+export const fetchMentalIssuesFn = async() => await API.get('/importantCases/')
+export const updateMentalIssuesFn = async(id: string, data:{action_taken: string, is_resolved:boolean}) => await API.put(`/importantCases/update/${id}`,data)

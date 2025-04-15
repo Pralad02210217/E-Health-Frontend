@@ -171,6 +171,7 @@ export function SignUpDialog() {
       ...(values.user_type !== "NON-STAFF" && {
         email: values.email,
         password: values.password,
+        confirmPassword: values.confirmPassword
       }),
       ...(values.user_type === "STUDENT" && {
         student_id: values.student_id,
