@@ -82,9 +82,7 @@ type createFeed = {
 // Common Auth Functionality
 
 export const loginMutationFn = async(data:LoginType) => 
-    await API.post("/auth/login", data, {
-    withCredentials: true, // send cookies across origin
-  })
+    await API.post("/auth/login", data)
 
 export const logoutMutationFn = async() => await API.post(`/auth/logout`)
 
