@@ -58,17 +58,16 @@ export default function Login() {
           // Check for callbackUrl in the query parameters
           const searchParams = new URLSearchParams(window.location.search);
           const callbackUrl = searchParams.get('callbackUrl');
-          router.replace('/')
-          // if (callbackUrl) {
-          //   router.replace(callbackUrl);
-          // } else {
-          //   // Fallback to role-based redirect
-          //   if (userRole === 'HA') {
-          //     router.replace('/');
-          //   } else {
-          //     router.replace('/users/feeds');
-          //   }
-          // }
+          if (callbackUrl) {
+            router.replace(callbackUrl);
+          } else {
+            // Fallback to role-based redirect
+            if (userRole === 'HA') {
+              router.replace('/');
+            } else {
+              router.replace('/users/feeds');
+            }
+          }
       },
 
       onError: (error: any) =>{
