@@ -171,7 +171,7 @@ This frontend communicates with a RESTful backend API for:
 
 Want to contribute? Awesome!
 
-Check out our [Contributing Guide](CONTRIBUTING.md) for:
+Check out our [Contributing Guide](contribution.md) for:
 - PR conventions
 - Branching strategy
 - Code of conduct
