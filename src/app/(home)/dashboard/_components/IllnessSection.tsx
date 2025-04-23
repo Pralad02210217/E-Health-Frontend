@@ -1,6 +1,7 @@
 'use client';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import DownloadableChart from './DownloadableComponent';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d', '#ffc658'];
 
@@ -14,6 +15,7 @@ export default function IllnessesSection({ illnessChartData }: any) {
                  </CardHeader>
                  <CardContent>
                    <div className="h-64">
+                    <DownloadableChart filename="most_treated_illnesses_bar_chart">
                      <ResponsiveContainer width="100%" height="100%">
                        <BarChart data={illnessChartData}>
                          <CartesianGrid strokeDasharray="3 3" />
@@ -24,6 +26,7 @@ export default function IllnessesSection({ illnessChartData }: any) {
                          <Bar dataKey="count" fill="#0088FE" />
                        </BarChart>
                      </ResponsiveContainer>
+                    </DownloadableChart>
                    </div>
                  </CardContent>
                </Card>
@@ -35,6 +38,8 @@ export default function IllnessesSection({ illnessChartData }: any) {
                  </CardHeader>
                  <CardContent>
                    <div className="h-64">
+                    <DownloadableChart filename="illnesses_by_type_pie_chart">
+
                      <ResponsiveContainer width="100%" height="100%">
                        <PieChart>
                          <Pie
@@ -55,6 +60,7 @@ export default function IllnessesSection({ illnessChartData }: any) {
                          <Legend />
                        </PieChart>
                      </ResponsiveContainer>
+                    </DownloadableChart>
                    </div>
                  </CardContent>
                </Card>

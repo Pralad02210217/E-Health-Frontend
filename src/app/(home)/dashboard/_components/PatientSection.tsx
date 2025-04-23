@@ -1,6 +1,7 @@
 'use client';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import DownloadableChart from './DownloadableComponent';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d', '#ffc658'];
 const AGE_GROUP_LABELS: { [key: string]: string } = {
@@ -27,6 +28,7 @@ console.log(genderData)
         </CardHeader>
         <CardContent>
           <div className="h-64">
+            <DownloadableChart filename="age_distribution_pie_chart">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -47,6 +49,7 @@ console.log(genderData)
                 <Legend />
               </PieChart>
             </ResponsiveContainer>
+            </DownloadableChart>
           </div>
         </CardContent>
         </Card>
@@ -58,6 +61,7 @@ console.log(genderData)
         </CardHeader>
         <CardContent>
             <div className="h-64">
+            <DownloadableChart filename="gender_distribution_bar_chart">
             <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={genderData}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -80,6 +84,7 @@ console.log(genderData)
                 />
                 </BarChart>
             </ResponsiveContainer>
+            </DownloadableChart>
             </div>
         </CardContent>
         </Card>
@@ -91,6 +96,7 @@ console.log(genderData)
           </CardHeader>
           <CardContent>
             <div className="h-64">
+              <DownloadableChart filename="student_program_statistics_bar_chart">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={studentProgramStats}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -100,6 +106,7 @@ console.log(genderData)
                   <Bar dataKey="count" fill="#82ca9d" />
                 </BarChart>
               </ResponsiveContainer>
+              </DownloadableChart>
             </div>
           </CardContent>
         </Card>
@@ -111,6 +118,7 @@ console.log(genderData)
           </CardHeader>
           <CardContent>
             <div className="h-64">
+              <DownloadableChart filename="family_member_treatments_bar_chart">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={familyMemberTreatments}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -120,6 +128,7 @@ console.log(genderData)
                   <Bar dataKey="count" fill="#ffc658" />
                 </BarChart>
               </ResponsiveContainer>
+              </DownloadableChart>
             </div>
           </CardContent>
         </Card>

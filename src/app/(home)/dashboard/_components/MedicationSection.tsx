@@ -1,6 +1,7 @@
 'use client';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import DownloadableChart from './DownloadableComponent';
 
 export default function MedicationsSection({ medicineChartData, medicineInventory, medicineUsageOverTime }: any) {
   return (
@@ -12,6 +13,7 @@ export default function MedicationsSection({ medicineChartData, medicineInventor
                  </CardHeader>
                  <CardContent>
                    <div className="h-64">
+                    <DownloadableChart filename="most_prescribed_medicines_bar_chart">
                      <ResponsiveContainer width="100%" height="100%">
                        <BarChart data={medicineChartData.slice(0, 5)}>
                          <CartesianGrid strokeDasharray="3 3" />
@@ -22,6 +24,7 @@ export default function MedicationsSection({ medicineChartData, medicineInventor
                          <Bar dataKey="count" fill="#00C49F" />
                        </BarChart>
                      </ResponsiveContainer>
+                    </DownloadableChart>
                    </div>
                  </CardContent>
                </Card>
@@ -33,6 +36,7 @@ export default function MedicationsSection({ medicineChartData, medicineInventor
                  </CardHeader>
                  <CardContent>
                    <div className="h-64">
+                    <DownloadableChart filename="medicine_inventory_bar_chart">
                      <ResponsiveContainer width="100%" height="100%">
                        <BarChart layout="vertical" data={medicineInventory.slice(0, 5)}>
                          <CartesianGrid strokeDasharray="3 3" />
@@ -42,6 +46,7 @@ export default function MedicationsSection({ medicineChartData, medicineInventor
                          <Bar dataKey="total_quantity" fill="#FFBB28" name="Total Quantity" />
                        </BarChart>
                      </ResponsiveContainer>
+                    </DownloadableChart>
                    </div>
                  </CardContent>
                </Card>
@@ -53,6 +58,8 @@ export default function MedicationsSection({ medicineChartData, medicineInventor
                  </CardHeader>
                  <CardContent>
                <div className="h-64">
+              <DownloadableChart filename="medicine_usage_over_time_bar_chart">
+
                <ResponsiveContainer width="100%" height="100%">
                    <BarChart 
                    data={medicineUsageOverTime.map((item:any) => ({
@@ -68,6 +75,7 @@ export default function MedicationsSection({ medicineChartData, medicineInventor
                    <Bar dataKey="total_used" fill="#FF8042" name="Total Used" />
                    </BarChart>
                </ResponsiveContainer>
+              </DownloadableChart>
                </div>
                  </CardContent>
                </Card>
