@@ -24,7 +24,6 @@ import { DiagnosisSection } from "./DiagnosisSection";
 import { MedicineSection } from "./MedicineSection";
 import { FormErrorDisplay } from "./FormError";
 
-// Import the components we'll create
 
 
 export default function TreatmentForm1() {
@@ -71,7 +70,7 @@ export default function TreatmentForm1() {
   // Define form type from the schema
   type FormValues = z.infer<typeof Treatmentschema>;
 
-  // For medicines array
+
   const medicinesArray = useFieldArray<FormValues>({
     control: form.control,
     name: "medicines"
@@ -91,17 +90,18 @@ export default function TreatmentForm1() {
     queryKey: ["users"], 
     queryFn: getUsersFn 
   });
-  console.log(users)
   
+
   const { data: medicines, isLoading: medicinesLoading } = useQuery({ 
     queryKey: ["medicines"], 
     queryFn: fetchMedicinesFn 
   });
-  
+
   const { data: illnesses, isLoading: illnessesLoading } = useQuery({ 
     queryKey: ["illnesses"], 
     queryFn: fetchIllnessFn 
   });
+
 
   // Mutations
   const treatmentMutation = useMutation({
@@ -164,34 +164,49 @@ export default function TreatmentForm1() {
     }, 500);
   };
 
-  const checkStockAvailability = (data:any) => {
-    const insufficientStockMedicines = data.medicines.filter((prescribedMedicine:any) => {
-      const medicineDetails = medicines?.data?.medicines?.find(
-        (m:any) => m.id === prescribedMedicine.medicineId
-      );
-      return !medicineDetails || medicineDetails.stock < prescribedMedicine.quantity;
+  const checkStockAvailability = (data: any, ) => { 
+    const insufficientStockMedicines = data.medicines.filter((prescribedMedicine: any) => {
+        const medicineDetails = medicines?.data?.medicines?.find(
+            (m: any) => m.id === prescribedMedicine.medicineId
+        );
+
+        if (!medicineDetails) {
+            return true; 
+        }
+
+  
+        const totalStock = medicineDetails?.batches?.reduce((sum: number, batch: any) => {
+            return sum + batch.quantity;
+        }, 0) || 0;
+
+        return totalStock < prescribedMedicine.quantity;
     });
 
     if (insufficientStockMedicines.length > 0) {
-      const errorMessage = insufficientStockMedicines.map((medicine:any) => {
-        const medicineDetails = medicines?.data?.medicines?.find(
-          (m:any) => m.id === medicine.medicineId
-        );
-        
-        return `${medicineDetails?.name || 'Unknown Medicine'}: Requested ${medicine.quantity}, Available ${medicineDetails?.stock || 0}`;
-      }).join(", ");
+        const errorMessage = insufficientStockMedicines.map((prescribedMedicine: any) => {
+            const medicineDetails = medicines?.data?.medicines?.find(
+                (m: any) => m.id === prescribedMedicine.medicineId
+            );
 
-      toast({
-        title: "Insufficient Stock",
-        description: `Cannot proceed. Insufficient stock for: ${errorMessage}`,
-        variant: "destructive",
-      });
-      
-      return false;
+             const totalStock = medicineDetails?.batches.reduce((sum: number, batch: any) => {
+                return sum + batch.quantity;
+            }, 0) || 0;
+
+            return `${medicineDetails?.name || 'Unknown Medicine'}: Requested ${prescribedMedicine.quantity}, Available ${totalStock || 0}`;
+        }).join(", ");
+
+        toast({ 
+            title: "Insufficient Stock",
+            description: `Cannot proceed. Insufficient stock for: ${errorMessage}`,
+            variant: "destructive",
+        });
+
+        return false;
     }
-    
+
     return true;
-  };
+};
+
 
   const onSubmit = async (data:any) => {
     if (user.userType !== 'HA') {
@@ -247,6 +262,7 @@ export default function TreatmentForm1() {
       });
 
       queryClient.invalidateQueries({ queryKey: ['treatments'] });
+      queryClient.invalidateQueries({ queryKey: ['medicines'] });
       setSelectedStaff(null);
       setSelectedFamilyMember(null);
       // Reset form
@@ -348,6 +364,7 @@ export default function TreatmentForm1() {
                   form={form}
                   medicinesArray={medicinesArray}
                   formOptions={formOptions}
+                  medicines={medicines?.data.medicines}
                 />
               </div>
               

@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,10 +10,68 @@ import {
 } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Trash2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-export function MedicineSection({ form, medicinesArray, formOptions }:{form:any, medicinesArray:any, formOptions:any}) {
+interface Medicine {
+  id: string;
+  name: string;
+  batches: {
+    id: string;
+    batch_name: string;
+    quantity: number;
+    expiry_date: string;
+  }[];
+}
+
+interface FormMedicine {
+  id: string;
+  medicineId: string;
+  quantity: number;
+  dosage: string;
+}
+
+interface MedicineSectionProps {
+  form: any; // You can replace 'any' with the actual form type if available
+  medicinesArray: any; //  You can replace 'any' with the actual type
+  formOptions: {
+    medicineOptions: { label: string; value: string }[];
+  };
+  medicines?: Medicine[]; // Added:  Optional prop for the full medicines data
+}
+
+export function MedicineSection({ form, medicinesArray, formOptions, medicines }: MedicineSectionProps) {
   const { fields, append, remove } = medicinesArray;
-  
+  const [availableStock, setAvailableStock] = useState<number | null>(null);
+  const [selectedMedicineId, setSelectedMedicineId] = useState<string>('');
+
+  // Update available stock when medicineId changes
+  useEffect(() => {
+    if (fields.length > 0) {
+      const currentMedicineId = form.getValues(`medicines.${0}.medicineId`);
+        setSelectedMedicineId(currentMedicineId);
+      const selectedMedicine = medicines?.find((m) => m.id === currentMedicineId);
+      const stock = selectedMedicine
+        ? selectedMedicine.batches.reduce((sum, batch) => sum + batch.quantity, 0)
+        : null;
+      setAvailableStock(stock);
+    }
+  }, [fields, medicines, form]);
+
+
+  const handleMedicineChange = (value: string, index: number) => {
+    medicinesArray.update(index, { medicineId: value, quantity: 1, dosage: '' }); //reset quantity and dosage
+    const selectedMedicine = medicines?.find((m) => m.id === value);
+    const stock = selectedMedicine
+      ? selectedMedicine.batches.reduce((sum, batch) => sum + batch.quantity, 0)
+      : null;
+    setAvailableStock(stock);
+    setSelectedMedicineId(value);
+  };
+
+  const handleQuantityChange = (value: number, index: number) => {
+    medicinesArray.update(index, { medicineId: fields[index].medicineId, quantity: value, dosage: fields[index].dosage });
+  }
+
   return (
     <div className="space-y-4 md:col-span-2">
       <div className="flex justify-between items-center">
@@ -27,23 +86,26 @@ export function MedicineSection({ form, medicinesArray, formOptions }:{form:any,
           Add Medicine
         </Button>
       </div>
-      
+
       {fields.length === 0 && (
         <p className="text-sm text-gray-500">No medicines added yet</p>
       )}
-      
-      {fields.map((field:any, index:any) => (
+
+      {fields.map((field: FormMedicine, index: number) => (
         <div key={field.id} className="p-4 border rounded-md">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <FormField
               control={form.control}
               name={`medicines.${index}.medicineId`}
-              render={({ field }) => (
+              render={({ field: formField }) => (
                 <FormItem>
                   <FormLabel>Medicine</FormLabel>
                   <Select
-                    value={field.value}
-                    onValueChange={field.onChange}
+                    value={formField.value}
+                    onValueChange={(value) => {
+                      formField.onChange(value);
+                      handleMedicineChange(value, index); // Call handleMedicineChange
+                    }}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -51,7 +113,7 @@ export function MedicineSection({ form, medicinesArray, formOptions }:{form:any,
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {formOptions.medicineOptions.map((option:any) => (
+                      {formOptions.medicineOptions.map((option: { label: string; value: string }) => (
                         <SelectItem key={option.value} value={option.value}>
                           {option.label}
                         </SelectItem>
@@ -62,7 +124,7 @@ export function MedicineSection({ form, medicinesArray, formOptions }:{form:any,
                 </FormItem>
               )}
             />
-            
+
             <FormField
               control={form.control}
               name={`medicines.${index}.quantity`}
@@ -70,18 +132,32 @@ export function MedicineSection({ form, medicinesArray, formOptions }:{form:any,
                 <FormItem>
                   <FormLabel>Quantity</FormLabel>
                   <FormControl>
-                    <Input 
-                      type="number" 
+                    <Input
+                      type="number"
                       min="1"
                       {...field}
-                      onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                      onChange={(e) => {
+                        const quantityValue = parseInt(e.target.value);
+                        if (!isNaN(quantityValue) && quantityValue >= 1) {
+                          field.onChange(quantityValue);
+                          handleQuantityChange(quantityValue, index);
+                        }
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
+                  {availableStock !== null && (
+                    <p className={cn(
+                      "text-sm mt-1",
+                      availableStock === 0 ? "text-red-500" : "text-gray-500"
+                    )}>
+                      Available: {availableStock}
+                    </p>
+                  )}
                 </FormItem>
               )}
             />
-            
+
             <div className="flex space-x-2">
               <FormField
                 control={form.control}
@@ -96,7 +172,7 @@ export function MedicineSection({ form, medicinesArray, formOptions }:{form:any,
                   </FormItem>
                 )}
               />
-              
+
               <Button
                 type="button"
                 variant="destructive"
@@ -114,3 +190,4 @@ export function MedicineSection({ form, medicinesArray, formOptions }:{form:any,
     </div>
   );
 }
+
