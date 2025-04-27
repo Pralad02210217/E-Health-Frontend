@@ -12,3 +12,25 @@ export function BellIcon(props: SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+
+export function CheckCircle(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg width={24} height={24} viewBox="0 0 24 24" fill="none" {...props}>
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm5.09 7.714a.998.998 0 00-1.414-1.414l-4.243 4.243-2.122-2.122a.998.998 0 00-1.414 1.414l3 3a.997.997 0 001.414 0l5-5z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+export function XCircle(props: SVGProps<SVGSVGElement>) {
+    return (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" {...props}>
+            <path d="M9.172 14.828L12 12.001l2.828 2.828L14.828 12l2.828-2.828L12 9.172l-2.828 2.828L9.172 12l-2.828-2.828L12 6.343l2.828 2.828L14.828 12l2.828 2.828z" fill="currentColor"/>
+            <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18c-4.418 0-8-3.582-8-8s3.582-8 8-8 8 3.582 8 8-3.582 8-8 8z" fill="currentColor"/>
+        </svg>
+    )
+}

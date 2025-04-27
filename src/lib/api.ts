@@ -198,6 +198,10 @@ export const createStaffFamilyFn = async(data:{name:string, staff_id:string, gen
 //HA dashboard
 export const fetchDashboardFn = async() => await API.get(`/dashboard`)
 
+//HA notification
+export const fetchNotificationFn = async() => await API.get('/notifications')
+export const updateNotificationFn = async(id: string) => await API.put(`/notifications/read/${id}`)
+
 //Fetch Programmes
 export const fetchProgrammesFn = async() => await API.get('/user/programmes')
 
