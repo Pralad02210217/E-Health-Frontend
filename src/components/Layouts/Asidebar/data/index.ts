@@ -5,16 +5,6 @@ export const NAV_DATA = [
     label: "MAIN MENU",
     items: [
       {
-        title: "Dashboard",
-        icon: Icons.HomeIcon,
-        items: [
-          {
-            title: "home",
-            url: "/users/home",
-          },
-        ],
-      },
-      {
         title: "Feeds",
         url: "/users/feeds",
         icon: Icons.ActivityIcon,

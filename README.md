@@ -158,7 +158,6 @@ This frontend communicates with a RESTful backend API for:
 
 ## 🎯 Future Roadmap
 
-- [ ] Real-time WebSocket-based notifications
 - [ ] AI-based health flagging
 - [ ] Export reports (PDF/CSV)
 - [ ] Multilingual support
