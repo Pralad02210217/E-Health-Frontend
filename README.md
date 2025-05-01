@@ -1,6 +1,3 @@
-Absolutely! Here's your beautifully polished and markdown-optimized `README.md` for the **College Infirmary Management System (CIMS) - Frontend**:
-
----
 
 # 🏥 College Infirmary Management System (CIMS) - Frontend
 
