@@ -109,6 +109,9 @@ Create a `.env.local` file:
 NEXT_PUBLIC_API_URL=https://your-backend-url.com
 NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your-cloud-name
 NEXT_PUBLIC_CLOUDINARY_API_KEY=your-api-key
+CLOUDINARY_API_SECRET = your-api-key
+JWT_SECRET = your-jwt-secret-key"
+NEXT_PUBLIC_SOCKET_URL=your-socket-url
 ```
 
 ### ▶️ Start the Dev Server
@@ -128,6 +131,9 @@ Visit **`http://localhost:3000`** in your browser.
 | `NEXT_PUBLIC_API_URL`          | Backend API base URL         | ✅       |
 | `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` | Cloudinary cloud name         | ✅       |
 | `NEXT_PUBLIC_CLOUDINARY_API_KEY`    | Cloudinary public API key     | ✅       |
+| `CLOUDINARY_API_SECRET`    | Cloudinary Secret API key     | ✅       |
+| `JWT_SECRET`    | JWT Secret Key    | ✅       |
+| `NEXT_PUBLIC_SOCKET_URL`    | Web Socket Url     | ✅       |
 
 ---
 
