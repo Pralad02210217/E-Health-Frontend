@@ -57,8 +57,7 @@ export default function Login() {
         const userRole = response.data?.user?.role;
           // Check for callbackUrl in the query parameters
           const searchParams = new URLSearchParams(window.location.search);
-          // const callbackUrl = searchParams.get('callbackUrl');
-          const callbackUrl = false
+          const callbackUrl = searchParams.get('callbackUrl');
           if (callbackUrl) {
             router.replace(callbackUrl);
           } else {
