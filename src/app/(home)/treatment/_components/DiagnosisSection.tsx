@@ -89,13 +89,13 @@ export function DiagnosisSection({ form, illnessArray, formOptions }:{form:any, 
             >
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select severity" />
+                  <SelectValue placeholder="Select Status" />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                <SelectItem value="MILD">Mild</SelectItem>
-                <SelectItem value="MODERATE">Moderate</SelectItem>
-                <SelectItem value="SEVERE">Severe</SelectItem>
+                <SelectItem value="MILD">No Rest Required </SelectItem>
+                <SelectItem value="MODERATE">Maybe Rest Required</SelectItem>
+                <SelectItem value="SEVERE">Rest Required</SelectItem>
               </SelectContent>
             </Select>
             <FormMessage />
@@ -104,24 +104,42 @@ export function DiagnosisSection({ form, illnessArray, formOptions }:{form:any, 
       />
       
       {/* Blood Pressure Field */}
-      <FormField
-        control={form.control}
-        name="blood_pressure"
-        render={({ field }) => (
+        <FormField
+          control={form.control}
+          name="blood_pressure"
+          render={({ field }) => (
+            <FormItem>
+          <FormLabel>Blood Pressure</FormLabel>
+          <FormControl>
+            <Input 
+              {...field} 
+              placeholder="e.g. 120/80" 
+            />
+          </FormControl>
+          <FormMessage />
+            </FormItem>
+          )}
+        />
+        {form.watch("severity") !== "MILD" && (
+          <FormField
+            control={form.control}
+            name="leave_notes"
+            render={({ field }) => (
           <FormItem>
-            <FormLabel>Blood Pressure</FormLabel>
+            <FormLabel>Leave Notes</FormLabel>
             <FormControl>
               <Input 
-                {...field} 
-                placeholder="e.g. 120/80" 
+            {...field} 
+            placeholder="e.g. Leave Notes" 
               />
             </FormControl>
             <FormMessage />
           </FormItem>
+            )}
+          />
         )}
-      />
-      
-      {/* Hospital Forwarding Checkboxes */}
+        
+        {/* Hospital Forwarding Checkboxes */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FormField
           control={form.control}

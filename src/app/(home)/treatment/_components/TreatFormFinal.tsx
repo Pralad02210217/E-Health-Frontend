@@ -56,6 +56,7 @@ export default function TreatmentForm1() {
       illnessIds: [""],
       diagnosis: "",
       blood_type: "",
+      leave_notes: "",
       blood_pressure: "",
       forward_to_hospital: false,
       forwarded_by_hospital: false,
@@ -236,6 +237,7 @@ export default function TreatmentForm1() {
         illness_ids: data.illnessIds,
         severity: data.severity,
         notes: data.diagnosis,
+        leave_notes: data.leave_notes,
         blood_pressure: data.blood_pressure,
         forwarded_by_hospital: data.forwarded_by_hospital,
         forward_to_hospital: data.forward_to_hospital,
@@ -309,7 +311,7 @@ export default function TreatmentForm1() {
     })) || [],
     
     staffOptions: users?.data?.users
-      ?.filter((u:any) => u.userType === 'STAFF')
+      ?.filter((u:any) => u.userType === 'STAFF' || u.userType === 'DEAN')
       .map((staff:any) => ({
         label: staff.name,
         value: staff.id,

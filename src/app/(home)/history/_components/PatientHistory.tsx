@@ -32,6 +32,7 @@ interface Treatment {
   doctorId: string;
   severity: string;
   notes: string;
+  leaveNotes: string | null;
   createdAt: string;
   patientName: string;
   patientGender: string;
@@ -62,7 +63,6 @@ export default function PatientHistory() {
     queryFn: fetchAllTreatmentFn,
   });
 
-  console.log(data)
 
   const treatments: Treatment[] = data?.data?.treatments || [];
 
@@ -126,6 +126,15 @@ export default function PatientHistory() {
       case 'severe': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
     }
+  };
+
+  const getSeverityText = (severity: string) => {
+      switch (severity.toLowerCase()) {
+          case 'mild': return 'No Rest Required';
+          case 'moderate': return 'Maybe Rest Required';
+          case 'severe': return 'Rest Required';
+          default: return severity;
+      }
   };
 
   if (isLoading) {
@@ -230,16 +239,9 @@ export default function PatientHistory() {
                                         {pt.illnesses?.map((illness) => illness.illnessName).join(', ') || 'N/A'}
                                     </TableCell>
                                     <TableCell>
-                                        <Badge 
-                                        variant={
-                                            pt.severity.toLowerCase() === 'mild' ? 'outline' :
-                                            pt.severity.toLowerCase() === 'moderate' ? 'secondary' :
-                                            'destructive'
-                                        }
-                                        className={getSeverityColor(pt.severity)}
-                                        >
-                                        {pt.severity}
-                                        </Badge>
+                                      <Badge className={`${getSeverityColor(pt.severity)} px-3 py-1`}>
+                                          {getSeverityText(pt.severity)}
+                                      </Badge>
                                     </TableCell>
                                     <TableCell className="text-gray-600">{truncateNotes(pt.notes, 50)}</TableCell>
                                     <TableCell>{pt.medicines.map((m) => m.medicineName).join(', ')}</TableCell>

@@ -139,13 +139,13 @@ const StudentHealthVisitsPage = () => {
   };
 
   const getSeverityBadge = (severity:any) => {
-    switch(severity) {
+    switch(severity.toUpperCase()) {
       case 'MILD':
-        return <Badge variant="outline" className="bg-green-100 text-green-800 hover:bg-green-100">Mild</Badge>;
+        return <Badge variant="outline" className="bg-green-100 text-green-800 hover:bg-green-100">No Rest Required</Badge>;
       case 'MODERATE':
-        return <Badge variant="outline" className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">Moderate</Badge>;
+        return <Badge variant="outline" className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">Maybe Rest Required</Badge>;
       case 'SEVERE':
-        return <Badge variant="outline" className="bg-red-100 text-red-800 hover:bg-red-100">Severe</Badge>;
+        return <Badge variant="outline" className="bg-red-100 text-red-800 hover:bg-red-100">Rest Required</Badge>;
       default:
         return <Badge variant="outline">{severity}</Badge>;
     }

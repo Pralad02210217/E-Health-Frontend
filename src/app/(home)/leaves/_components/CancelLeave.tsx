@@ -23,6 +23,7 @@ const CancelLeaveModal = () => {
       toast({ title: 'Leave cancelled successfully', variant: 'default' });
       await refetch(); // Refetch user data
       queryClient.invalidateQueries({ queryKey: ["leaves"] });
+      queryClient.invalidateQueries({ queryKey: ["authUser"] });
       setIsModalOpen(false); // Close the modal
     } catch (error: any) {
       toast({ title: 'Error cancelling leave', description: error.data.message, variant: 'destructive' });

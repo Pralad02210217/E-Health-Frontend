@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { updateBatchFn, deleteBatchFn } from '@/lib/api';
+import { updateBatchFn, deleteBatchByIdFn } from '@/lib/api';
 import { toast } from '@/hooks/use-toast';
 import { Loader } from 'lucide-react';
 
@@ -51,7 +51,7 @@ export default function BatchModalContent({ batches, onClose }: BatchModalConten
   });
 
   const deleteBatchMutation = useMutation({
-    mutationFn: deleteBatchFn,
+    mutationFn: deleteBatchByIdFn,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['medicines'] });
       onClose(); 

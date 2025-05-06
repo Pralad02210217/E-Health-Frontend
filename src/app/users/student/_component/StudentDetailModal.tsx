@@ -10,6 +10,7 @@ interface Treatment {
     studentNumber: string; // Assuming this exists in your treatment data
     severity: string;
     createdAt: string;
+    leaveNotes: string | null;
 }
 
 interface TreatmentDetailsDialogProps {
@@ -31,6 +32,14 @@ const StudentTreatmentDetailsDialog: React.FC<TreatmentDetailsDialogProps> = ({
             case 'moderate': return 'bg-yellow-100 text-yellow-800';
             case 'severe': return 'bg-red-100 text-red-800';
             default: return 'bg-gray-100 text-gray-800';
+        }
+    };
+    const getSeverityText = (severity: string) => {
+        switch (severity.toLowerCase()) {
+            case 'mild': return 'No Rest Required';
+            case 'moderate': return 'Maybe Rest Required';
+            case 'severe': return 'Rest Required';
+            default: return severity;
         }
     };
 
@@ -55,9 +64,17 @@ const StudentTreatmentDetailsDialog: React.FC<TreatmentDetailsDialogProps> = ({
                             <h2 className="font-bold text-lg">{selectedTreatment.patientName}</h2>
                         </div>
                         <Badge className={`${getSeverityColor(selectedTreatment.severity)} px-3 py-1`}>
-                            {selectedTreatment.severity}
+                            {getSeverityText(selectedTreatment.severity)}
                         </Badge>
                     </div>
+                    {(selectedTreatment.severity.toLowerCase() === 'moderate' || 
+                        selectedTreatment.severity.toLowerCase() === 'severe') && 
+                        selectedTreatment.leaveNotes && (
+                        <div className="bg-orange-50 rounded-lg p-4">
+                            <h3 className="font-semibold text-orange-800 mb-2">Leave Notes</h3>
+                            <p className="text-sm text-orange-700">{selectedTreatment.leaveNotes}</p>
+                        </div>
+                    )}
 
                     {/* Student Number */}
                     <div className="flex items-center space-x-2">

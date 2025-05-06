@@ -18,6 +18,7 @@ export const Treatmentschema = z.object({
   diagnosis: z.string().min(5, "Diagnosis must be at least 5 characters"),
   severity: z.enum(["MILD", "MODERATE", "SEVERE"]),
   blood_pressure: z.string().optional(),
+  leave_notes: z.string().optional(),
   forward_to_hospital: z.boolean().optional(),
   forwarded_by_hospital: z.boolean().optional(),
   patientId: z.string().optional(),

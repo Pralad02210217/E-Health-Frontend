@@ -10,6 +10,7 @@ interface Treatment {
   severity: string;
   createdAt: string;
   notes: string;
+  leaveNotes: string | null;
   bloodPressure: string | null;
   forwardedByHospital: boolean;
   forwardedToHospital: boolean;
@@ -46,6 +47,21 @@ const TreatmentDetailsDialog: React.FC<TreatmentDetailsDialogProps> = ({
     }
   };
 
+
+    const getSeverityBadge = (severity:any) => {
+      switch(severity.toUpperCase()) {
+        case 'MILD':
+          return <Badge variant="outline" className="bg-green-100 text-green-800 hover:bg-green-100">No Rest Required</Badge>;
+        case 'MODERATE':
+          return <Badge variant="outline" className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">Maybe Rest Required</Badge>;
+        case 'SEVERE':
+          return <Badge variant="outline" className="bg-red-100 text-red-800 hover:bg-red-100">Rest Required</Badge>;
+        default:
+          return <Badge variant="outline">{severity}</Badge>;
+      }
+    };
+  
+
   return (
     <Dialog open={!!selectedTreatment} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[700px] max-h-[80vh] overflow-y-auto">
@@ -64,13 +80,18 @@ const TreatmentDetailsDialog: React.FC<TreatmentDetailsDialogProps> = ({
               <h2 className="font-bold text-lg">{selectedTreatment.patientName}</h2>
             </div>
             <div className="text-right">
-              <Badge 
-                className={`${getSeverityColor(selectedTreatment.severity)} px-3 py-1`}
-              >
-                {selectedTreatment.severity} Severity
-              </Badge>
+              {getSeverityBadge(selectedTreatment.severity)}
             </div>
           </div>
+          {/* Leave Notes for Moderate/Severe Cases */}
+          {(selectedTreatment.severity.toLowerCase() === 'moderate' || 
+            selectedTreatment.severity.toLowerCase() === 'severe') && 
+            selectedTreatment.leaveNotes && (
+              <div className="bg-orange-50 rounded-lg p-4">
+                <h3 className="font-semibold text-orange-800 mb-2">Leave Notes</h3>
+                <p className="text-sm text-orange-700">{selectedTreatment.leaveNotes}</p>
+              </div>
+          )}
 
           {/* Hospital Transfer Status */}
           {(selectedTreatment.forwardedByHospital || selectedTreatment.forwardedToHospital) && (
