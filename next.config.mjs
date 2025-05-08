@@ -30,16 +30,7 @@ const nextConfig = {
         port: ""
       }
     ]
-  },
-  async rewrites() {
-    return [
-      {
-        source: "/api/v1/:path*", 
-        destination: "https://e-health-backend.onrender.com/api/v1/:path*", // backend has /api/v1/xyz
-      },
-    ];
-  }
-  
+  },  
 };
 
 export default nextConfig;
