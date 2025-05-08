@@ -83,7 +83,7 @@ type createFeed = {
 
 export const loginMutationFn = async(data:LoginType) => 
     await API.post("/auth/login", data)
-
+ 
 export const logoutMutationFn = async() => await API.post(`/auth/logout`)
 
 export const verifyMFALoginMutationFn = async (data: mfaLoginType) =>
